@@ -1,0 +1,809 @@
+{
+ "app": "tempo-floor",
+ "version": 1,
+ "updatedAt": "2026-09-23T00:00:00.000Z",
+ "categories": [
+  {
+   "name": "Tempo Solar World",
+   "q": [
+    [
+     "Tempo Solar World's CEO",
+     "Drake Dipuzo"
+    ],
+    [
+     "City where Tempo is based",
+     "Las Vegas"
+    ],
+    [
+     "Street the Tempo office is on",
+     "E Patrick Ln"
+    ],
+    [
+     "Suite letter of the Tempo office",
+     "Suite G"
+    ],
+    [
+     "Tempo's main phone number",
+     "702-847-7288"
+    ],
+    [
+     "Customer help email",
+     "help@temposolarworld.com"
+    ],
+    [
+     "State board that licenses Tempo",
+     "NSCB (Nevada State Contractors Board)"
+    ],
+    [
+     "Tempo's two licensed trades",
+     "Solar and electrical"
+    ],
+    [
+     "Either of Tempo's NSCB license numbers",
+     "C2-44494 or C25-876672"
+    ],
+    [
+     "Software used to design systems and build proposals",
+     "OpenSolar"
+    ],
+    [
+     "Utility almost all of our customers are with",
+     "NV Energy"
+    ]
+   ]
+  },
+  {
+   "name": "Objections",
+   "q": [
+    [
+     "\"I need to think about it.\"",
+     "Find the real concern and isolate it"
+    ],
+    [
+     "\"Solar is too expensive.\"",
+     "Compare to what they already pay the utility; $0-down options"
+    ],
+    [
+     "\"I need to talk to my spouse.\"",
+     "Book a time with both decision-makers"
+    ],
+    [
+     "\"I'm moving in a couple years.\"",
+     "Adds home value; agreements can transfer to the buyer"
+    ],
+    [
+     "\"My roof is old.\"",
+     "Inspect it; plan roof work before install"
+    ],
+    [
+     "\"I got burned by a solar company before.\"",
+     "Build trust: licensed, transparent, show proof"
+    ],
+    [
+     "\"Just leave me some info.\"",
+     "Stay engaged and book a specific follow-up"
+    ],
+    [
+     "\"What if it breaks?\"",
+     "Warranties plus monitoring"
+    ],
+    [
+     "\"Power rates won't go up much.\"",
+     "Show their bill history and rate trends"
+    ],
+    [
+     "\"Let me get other quotes.\"",
+     "Welcome it; compare apples to apples and highlight value"
+    ],
+    [
+     "\"I don't want a lien on my house.\"",
+     "Explain what's actually filed and that it's on the equipment, not a mortgage"
+    ],
+    [
+     "\"My HOA won't allow it.\"",
+     "Nevada law bars HOAs from banning solar; we handle the HOA application"
+    ],
+    [
+     "\"I'm not interested.\"",
+     "Ask a curious question about their power bill"
+    ]
+   ]
+  },
+  {
+   "name": "Solar Panels",
+   "q": [
+    [
+     "Device that converts the panels' DC power into AC for the home",
+     "Inverter"
+    ],
+    [
+     "Unit of power equal to 1,000 watts",
+     "Kilowatt (kW)"
+    ],
+    [
+     "Unit of energy printed on the power bill",
+     "Kilowatt-hour (kWh)"
+    ],
+    [
+     "In Nevada, the best direction for panels to face",
+     "South"
+    ],
+    [
+     "Material most solar cells are made from",
+     "Silicon"
+    ],
+    [
+     "Uniform black panel type with the highest efficiency",
+     "Monocrystalline"
+    ],
+    [
+     "Twenty 400-watt panels make a system of this size",
+     "8 kW"
+    ],
+    [
+     "Small inverter mounted under each panel",
+     "Microinverter"
+    ],
+    [
+     "Rails and mounts that attach panels to the roof",
+     "Racking"
+    ],
+    [
+     "Metal piece that waterproofs a roof penetration",
+     "Flashing"
+    ],
+    [
+     "Why grid-tied panels shut off in an outage",
+     "Anti-islanding (protects line workers)"
+    ],
+    [
+     "What % of the home's usage the system covers",
+     "Offset"
+    ],
+    [
+     "Very common roof type on Las Vegas homes",
+     "Concrete tile"
+    ]
+   ]
+  },
+  {
+   "name": "HOA",
+   "q": [
+    [
+     "What HOA stands for",
+     "Homeowners association"
+    ],
+    [
+     "Can a Nevada HOA ban solar outright?",
+     "No (it can set reasonable rules)"
+    ],
+    [
+     "HOA committee that reviews exterior changes",
+     "Architectural review committee (ARC)"
+    ],
+    [
+     "When HOA approval should be in hand",
+     "Before install"
+    ],
+    [
+     "Documents usually sent with an HOA application",
+     "Site plan / panel layout and equipment spec sheets"
+    ],
+    [
+     "Who usually submits the HOA application",
+     "Tempo, on the customer's behalf"
+    ],
+    [
+     "What the customer must sign on most HOA applications",
+     "The owner's signature / authorization"
+    ],
+    [
+     "Why installing before HOA approval is a problem",
+     "Fines, forced changes, and customer complaints"
+    ],
+    [
+     "Common HOA request about panel placement",
+     "Keep panels off the street-facing side when possible"
+    ],
+    [
+     "What to ask at the door if they mention an HOA",
+     "Who their HOA is and if neighbors already have solar"
+    ],
+    [
+     "First thing to check when an HOA application stalls",
+     "Follow up and confirm nothing is missing"
+    ]
+   ]
+  },
+  {
+   "name": "Incentives",
+   "q": [
+    [
+     "Federal homeowner solar tax credit that ended after 2025",
+     "Residential Clean Energy Credit (25D)"
+    ],
+    [
+     "Last year homeowners could claim the 25D credit",
+     "2025"
+    ],
+    [
+     "Why PPAs and leases still carry a tax-credit benefit",
+     "The system owner claims the commercial credit and passes savings on"
+    ],
+    [
+     "Date projects had to begin construction by to lock in the commercial credit",
+     "July 4, 2026"
+    ],
+    [
+     "NV Energy credit rate for exported solar for new customers",
+     "75% of the retail rate"
+    ],
+    [
+     "Nevada law that brought back net metering in 2017",
+     "AB 405"
+    ],
+    [
+     "Term for exported power that earns a bill credit",
+     "Net metering"
+    ],
+    [
+     "Who claims the tax credit on a LightReach PPA",
+     "The system owner, not the homeowner"
+    ],
+    [
+     "Is a tax credit the same as a rebate?",
+     "No; it reduces taxes owed"
+    ],
+    [
+     "Why reps should never promise a customer a tax credit",
+     "Eligibility depends on their tax situation; send them to a tax pro"
+    ]
+   ]
+  },
+  {
+   "name": "PPA LightReach",
+   "q": [
+    [
+     "What PPA stands for",
+     "Power purchase agreement"
+    ],
+    [
+     "Company behind LightReach",
+     "Palmetto"
+    ],
+    [
+     "What the homeowner pays for in a PPA",
+     "Each kWh the system produces"
+    ],
+    [
+     "Who owns the system in a LightReach PPA",
+     "LightReach (the third party), not the homeowner"
+    ],
+    [
+     "Upfront cost to the homeowner",
+     "$0"
+    ],
+    [
+     "Yearly price increase built into some PPAs",
+     "Escalator"
+    ],
+    [
+     "Who handles repairs on a PPA system",
+     "The system owner (LightReach)"
+    ],
+    [
+     "What happens to the PPA when the home is sold",
+     "It transfers to the buyer or gets bought out"
+    ],
+    [
+     "Price we compare the PPA rate against",
+     "Their NV Energy rate per kWh"
+    ],
+    [
+     "Does the homeowner get the tax credit on a PPA?",
+     "No"
+    ],
+    [
+     "What PPW stands for in PPA pricing",
+     "Price per watt"
+    ],
+    [
+     "Main selling point of a PPA vs a loan",
+     "No ownership costs and a lower rate than the utility from day one"
+    ]
+   ]
+  },
+  {
+   "name": "PTO Timeline",
+   "q": [
+    [
+     "What PTO stands for",
+     "Permission to Operate"
+    ],
+    [
+     "Who grants PTO",
+     "NV Energy"
+    ],
+    [
+     "First call the customer gets after signing",
+     "Welcome call"
+    ],
+    [
+     "Step right after the welcome call",
+     "Site survey"
+    ],
+    [
+     "Office that issues the building permit",
+     "City or county building department (AHJ)"
+    ],
+    [
+     "Final visit before we request PTO",
+     "City/county inspection"
+    ],
+    [
+     "What NV Energy swaps out before PTO",
+     "The meter (for a net meter)"
+    ],
+    [
+     "Application to connect to the grid",
+     "Interconnection application"
+    ],
+    [
+     "Can the customer turn the system on before PTO?",
+     "No"
+    ],
+    [
+     "Order of these: install, permit, PTO",
+     "Permit, install, PTO"
+    ],
+    [
+     "Best way to keep a customer calm during the wait",
+     "Set expectations early and update them at each milestone"
+    ],
+    [
+     "Step where the system goes on the roof",
+     "Install"
+    ]
+   ]
+  },
+  {
+   "name": "Commissions & Pay",
+   "q": [
+    [
+     "Base price per watt the company keeps before rep pay",
+     "Redline"
+    ],
+    [
+     "What PPW stands for",
+     "Price per watt"
+    ],
+    [
+     "Sold at $3.50/W, redline $2.80/W, 8 kW system. Commission?",
+     "$5,600"
+    ],
+    [
+     "Sold at $3.20/W, redline $2.90/W, 10 kW system. Commission?",
+     "$3,000"
+    ],
+    [
+     "Extra job costs that can lower commission",
+     "Adders"
+    ],
+    [
+     "Pay taken back when a deal cancels",
+     "Clawback / chargeback"
+    ],
+    [
+     "A 6 kW system is how many watts?",
+     "6,000"
+    ],
+    [
+     "Pay released at set points in the project",
+     "Milestone payments"
+    ],
+    [
+     "Raising PPW by $0.10 on a 7 kW system adds how much?",
+     "$700"
+    ],
+    [
+     "Rep who books the appointment",
+     "Setter"
+    ],
+    [
+     "Rep who runs the appointment and closes",
+     "Closer"
+    ]
+   ]
+  },
+  {
+   "name": "Loan",
+   "q": [
+    [
+     "Who owns the system with a loan",
+     "The homeowner"
+    ],
+    [
+     "Sungage Financial provides this product",
+     "Solar loans"
+    ],
+    [
+     "Fee the lender charges the installer to offer a rate",
+     "Dealer fee"
+    ],
+    [
+     "Credit check that doesn't affect the customer's score",
+     "Soft pull"
+    ],
+    [
+     "Annual cost of borrowing, including fees",
+     "APR"
+    ],
+    [
+     "Main loan advantage over a PPA",
+     "Ownership and long-term savings"
+    ],
+    [
+     "Filing a lender may record on the solar equipment",
+     "UCC-1 (fixture filing)"
+    ],
+    [
+     "What the customer should compare the loan payment to",
+     "Their current power bill"
+    ],
+    [
+     "Who handles repairs on a loan system after warranty",
+     "The homeowner"
+    ],
+    [
+     "Can a loan usually be paid off early?",
+     "Yes, with no prepayment penalty on most solar loans (confirm terms)"
+    ],
+    [
+     "Longer loan term means a lower payment but more what?",
+     "Total interest"
+    ]
+   ]
+  },
+  {
+   "name": "Pearl Certificate",
+   "q": [
+    [
+     "Company that certifies a home's solar and energy features",
+     "Pearl"
+    ],
+    [
+     "Who the Pearl report helps when the home is sold",
+     "Appraisers and buyers"
+    ],
+    [
+     "Main benefit of Pearl Certification to the homeowner",
+     "Proves added home value at resale"
+    ],
+    [
+     "Pearl Certification levels, lowest to highest",
+     "Silver, Gold, Platinum"
+    ],
+    [
+     "What Pearl documents about the solar system",
+     "Equipment, quality, and expected performance"
+    ],
+    [
+     "When a Pearl certificate is most useful",
+     "Selling or refinancing the home"
+    ],
+    [
+     "Why mention Pearl at the kitchen table",
+     "It answers the \"does solar help my home value?\" question"
+    ]
+   ]
+  },
+  {
+   "name": "Adders",
+   "q": [
+    [
+     "What an adder is",
+     "An extra cost added to the system price for job-specific work"
+    ],
+    [
+     "Upgrading the main panel to handle solar",
+     "Main panel upgrade (MPU)"
+    ],
+    [
+     "Adder for mounting on a concrete tile roof",
+     "Tile roof adder"
+    ],
+    [
+     "Adder for digging a line from a ground array",
+     "Trenching"
+    ],
+    [
+     "Adder for adding home backup",
+     "Battery"
+    ],
+    [
+     "How adders usually affect rep pay",
+     "They raise job cost and can lower commission"
+    ],
+    [
+     "When adders should be caught",
+     "At the site survey, before the deal is final"
+    ],
+    [
+     "Adder for replacing or repairing the roof first",
+     "Re-roof"
+    ],
+    [
+     "Adder when panels mount on the ground instead of the roof",
+     "Ground mount"
+    ],
+    [
+     "Why disclose adders early",
+     "Avoid surprises, cancellations, and complaints"
+    ]
+   ]
+  },
+  {
+   "name": "Tie Downs",
+   "q": [
+    [
+     "What a tie-down is",
+     "A short question at the end of a statement that gets a yes"
+    ],
+    [
+     "Finish it: \"Saving money matters to you, ___?\"",
+     "doesn't it?"
+    ],
+    [
+     "Finish it: \"That payment's lower than your bill, ___?\"",
+     "isn't it?"
+    ],
+    [
+     "Finish it: \"You'd rather own your power, ___?\"",
+     "wouldn't you?"
+    ],
+    [
+     "Main purpose of a tie-down",
+     "Build small agreements toward the close"
+    ],
+    [
+     "Tie-down that goes at the start of a sentence",
+     "Inverted tie-down (\"Isn't it nice when…\")"
+    ],
+    [
+     "How many tie-downs is too many",
+     "When it sounds scripted or pushy"
+    ],
+    [
+     "Turn it into a tie-down: \"NV Energy keeps raising rates.\"",
+     "NV Energy keeps raising rates, don't they?"
+    ],
+    [
+     "What you should do after a tie-down gets a yes",
+     "Move forward to the next step"
+    ]
+   ]
+  },
+  {
+   "name": "Cash Payment",
+   "q": [
+    [
+     "Main reason to pay cash for solar",
+     "Lowest total cost and best savings"
+    ],
+    [
+     "Who owns the system with a cash purchase",
+     "The homeowner"
+    ],
+    [
+     "Interest paid on a cash purchase",
+     "None"
+    ],
+    [
+     "Time it takes for savings to cover the system cost",
+     "Payback period"
+    ],
+    [
+     "Cash is usually paid in parts tied to these",
+     "Project milestones"
+    ],
+    [
+     "What the customer should get for every payment",
+     "A receipt / written record"
+    ],
+    [
+     "Who handles repairs after warranties end on a cash system",
+     "The homeowner"
+    ],
+    [
+     "Does a cash customer get the federal 25D credit on a 2026 install?",
+     "No, it ended after 2025"
+    ],
+    [
+     "Cash buyer's return on investment abbreviation",
+     "ROI"
+    ]
+   ]
+  },
+  {
+   "name": "Warranties",
+   "q": [
+    [
+     "Warranty that covers defects in the panel itself",
+     "Product warranty"
+    ],
+    [
+     "Warranty that guarantees panel output over time",
+     "Performance warranty"
+    ],
+    [
+     "Typical length of a panel performance warranty",
+     "25 years"
+    ],
+    [
+     "Warranty that covers the installer's work",
+     "Workmanship warranty"
+    ],
+    [
+     "Warranty that covers leaks from roof mounts",
+     "Roof penetration warranty"
+    ],
+    [
+     "Enphase microinverter warranty length",
+     "25 years"
+    ],
+    [
+     "Who handles warranty on a LightReach PPA system",
+     "LightReach (system owner)"
+    ],
+    [
+     "What monitoring helps catch before it's a big problem",
+     "Production drops"
+    ],
+    [
+     "Why walk through warranties at the close",
+     "Removes the \"what if it breaks\" fear"
+    ]
+   ]
+  },
+  {
+   "name": "Ice Breakers",
+   "q": [
+    [
+     "First thing to do after the door opens",
+     "Smile, step back, and introduce yourself"
+    ],
+    [
+     "Why comment on something at the home",
+     "Builds rapport fast"
+    ],
+    [
+     "Good way to mention the neighborhood",
+     "\"We're helping a few of your neighbors on this street\""
+    ],
+    [
+     "Easy opener in a Vegas summer",
+     "Ask about their summer power bill"
+    ],
+    [
+     "Homeowner is busy or has kids at the door",
+     "Keep it short and offer a better time"
+    ],
+    [
+     "Homeowner is working in the yard",
+     "Compliment the work and keep it casual"
+    ],
+    [
+     "Why use their name once you have it",
+     "Makes it personal and builds trust"
+    ],
+    [
+     "What to avoid in the first 10 seconds",
+     "Launching straight into a pitch"
+    ],
+    [
+     "Door hanger or card is for",
+     "No-answer doors and follow-ups"
+    ],
+    [
+     "Best body language at the door",
+     "Open, relaxed, angled to the side"
+    ]
+   ]
+  },
+  {
+   "name": "Leading Questions",
+   "q": [
+    [
+     "What a leading question does",
+     "Guides the homeowner toward a conclusion"
+    ],
+    [
+     "Question type that gets them talking",
+     "Open-ended question"
+    ],
+    [
+     "Question that tells you who controls the bill",
+     "\"Who takes care of the power bill?\""
+    ],
+    [
+     "Leading question about the bill",
+     "\"Has your bill been going up lately?\""
+    ],
+    [
+     "Question that surfaces the pain",
+     "\"What's your highest summer bill been?\""
+    ],
+    [
+     "Question that checks commitment",
+     "\"If the numbers make sense, is there any reason we couldn't get started today?\""
+    ],
+    [
+     "Question to test ownership interest",
+     "\"Would you rather rent your power or own it?\""
+    ],
+    [
+     "Question that checks timing",
+     "\"How long are you planning to stay in the home?\""
+    ],
+    [
+     "Question to confirm value before price",
+     "\"Does this look like it would help your family?\""
+    ],
+    [
+     "What to do after asking a question",
+     "Stop talking and listen"
+    ]
+   ]
+  },
+  {
+   "name": "Fenix Sun",
+   "q": []
+  },
+  {
+   "name": "OpenSolar",
+   "q": [
+    [
+     "What OpenSolar is used for",
+     "Designing systems and building proposals"
+    ],
+    [
+     "OpenSolar area where you lay out panels on the roof",
+     "Studio (design)"
+    ],
+    [
+     "Tool that estimates lost production from trees and chimneys",
+     "Shading analysis"
+    ],
+    [
+     "Imagery OpenSolar uses to see the roof",
+     "Satellite / aerial imagery"
+    ],
+    [
+     "What the customer can do with an online OpenSolar proposal",
+     "Review and sign it"
+    ],
+    [
+     "Number that shows how much of their usage the design covers",
+     "Offset"
+    ],
+    [
+     "Customer info needed for an accurate design",
+     "12 months of usage (the power bill)"
+    ],
+    [
+     "What to check before sending a proposal",
+     "Panel count, offset, pricing, and financing option"
+    ],
+    [
+     "Where pricing and payment options show for the customer",
+     "The proposal"
+    ],
+    [
+     "Why use actual usage instead of a guess",
+     "So the system isn't over- or under-sized"
+    ]
+   ]
+  }
+ ],
+ "roster": []
+}
