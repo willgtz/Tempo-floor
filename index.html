@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Floor: Tempo Solar Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e6eef9; --bg2:#d3e0f3; --surface:#ffffff; --ink:#0f1a3a; --muted:#56627e;
+  --line:rgba(15,26,58,.14); --cell:#14224a; --busbar:rgba(214,224,240,.55);
+  --sun:#f5a300; --sun-ink:#2a1a00; --good:#1f9d5c; --bad:#d63a3f;
+  --display:"Saira Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1430; --bg2:#121d42; --surface:#16224a; --ink:#eef2fb; --muted:#9aa7c7;
+    --line:rgba(238,242,251,.14); --cell:#0a1433; --busbar:rgba(200,214,240,.35);
+    --sun:#ffb31f; --sun-ink:#2a1a00; --good:#34c77b; --bad:#f0585d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1430; --bg2:#121d42; --surface:#16224a; --ink:#eef2fb; --muted:#9aa7c7;
+  --line:rgba(238,242,251,.14); --cell:#0a1433; --busbar:rgba(200,214,240,.35);
+  --sun:#ffb31f; --sun-ink:#2a1a00; --good:#34c77b; --bad:#f0585d;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:16px clamp(12px,3vw,32px) 40px}
+
+/* header */
+header.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;align-items:baseline;gap:12px}
+.brand h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:.01em;margin:0;line-height:1}
+.brand .sub{color:var(--muted);font-weight:600}
+.sunmark{width:30px;height:30px;border-radius:50%;background:var(--sun);box-shadow:0 0 0 5px color-mix(in srgb,var(--sun) 25%,transparent);align-self:center;flex:none}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+
+.btn{border:1px solid var(--line);background:var(--surface);padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--sun);color:var(--sun-ink);border-color:transparent;font-weight:700}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.big{font-family:var(--display);font-size:24px;font-weight:700;padding:12px 26px;letter-spacing:.02em}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.screen[hidden]{display:none!important}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:clamp(16px,2.5vw,28px)}
+
+/* setup */
+.setup{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:20px}
+@media (max-width:820px){.setup{grid-template-columns:1fr}}
+.setup h2,.edit h2{font-family:var(--display);font-size:30px;margin:0 0 6px;line-height:1.1}
+.hint{color:var(--muted);margin:0 0 14px;max-width:62ch}
+label.f{display:block;font-weight:600;margin:14px 0 6px}
+textarea,input[type=text],input[type=number]{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit}
+textarea{resize:vertical;min-height:220px;line-height:1.5}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.row>div{flex:1;min-width:130px}
+.check{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:500}
+.rules ol{padding-left:20px;margin:0}
+.rules li{margin:0 0 8px}
+kbd{font-family:var(--body);font-size:.85em;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:var(--bg)}
+
+/* board */
+.boardwrap{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px;align-items:start}
+@media (max-width:900px){.boardwrap{grid-template-columns:1fr}}
+.status{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.status p{margin:0;font-size:18px;font-weight:600;max-width:60ch}
+.floor{background:#060b1e;padding:10px;border-radius:14px;overflow-x:auto}
+.grid{display:grid;gap:0;min-width:480px}
+.tile{position:relative;aspect-ratio:1/1;border:0;padding:6px;cursor:pointer;
+  background:
+    linear-gradient(90deg,transparent calc(33.3% - 1px),var(--busbar) calc(33.3% - 1px),var(--busbar) calc(33.3% + 1px),transparent calc(33.3% + 1px),transparent calc(66.6% - 1px),var(--busbar) calc(66.6% - 1px),var(--busbar) calc(66.6% + 1px),transparent calc(66.6% + 1px)),
+    repeating-linear-gradient(0deg,transparent 0 7px,rgba(255,255,255,.07) 7px 8px),
+    hsl(var(--h) 68% 34%);
+  color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2px;
+  border-style:solid;border-color:#060b1e;border-width:0;transition:filter .15s}
+.tile.empty{background:transparent;cursor:default}
+.tile .tn{font-family:var(--display);font-weight:700;font-size:clamp(13px,1.6vw,20px);line-height:1.05;text-shadow:0 1px 2px rgba(0,0,0,.6);word-break:break-word}
+.tile .tc{font-size:clamp(10px,1vw,12px);font-weight:600;opacity:.88;line-height:1.15;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.tile.dim{filter:saturate(.35) brightness(.55)}
+.tile.hot{filter:brightness(1.35);box-shadow:inset 0 0 0 4px var(--sun)}
+.tile.target{box-shadow:inset 0 0 0 4px #fff;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:inset 0 0 0 4px var(--sun)}}
+@media (prefers-reduced-motion:reduce){.tile.target{animation:none}}
+.side h3{font-family:var(--display);font-size:24px;margin:0 0 8px}
+.lb{list-style:none;margin:0;padding:0;max-height:520px;overflow:auto}
+.lb li{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.lb .sw{width:14px;height:14px;border-radius:3px;flex:none}
+.lb .nm{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .ct{font-family:var(--display);font-weight:700;font-size:18px}
+.lb li.out{opacity:.4;text-decoration:line-through}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+/* duel */
+.duel{display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,2.4fr) minmax(150px,1fr);gap:16px;align-items:stretch}
+@media (max-width:820px){.duel{grid-template-columns:1fr 1fr}.duel .clue-box{grid-column:1/-1;order:-1}}
+.player{border-radius:16px;padding:18px;border:3px solid transparent;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;transition:border-color .15s,opacity .15s}
+.player.active{border-color:var(--sun);box-shadow:0 0 0 6px color-mix(in srgb,var(--sun) 22%,transparent)}
+.player.idle{opacity:.55}
+.player .pn{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.6vw,34px);line-height:1.05;word-break:break-word}
+.player .role{color:var(--muted);font-weight:600;font-size:14px}
+.clock{font-family:var(--display);font-weight:800;font-size:clamp(52px,7vw,96px);line-height:1;font-variant-numeric:tabular-nums}
+.clock.low{color:var(--bad)}
+.clue-box{background:var(--cell);color:#fff;border-radius:16px;padding:22px;display:flex;flex-direction:column;min-height:340px;position:relative;overflow:hidden}
+.clue-box::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent calc(25% - 1px),var(--busbar) calc(25% - 1px),var(--busbar) 25%,transparent 25%,transparent calc(50% - 1px),var(--busbar) calc(50% - 1px),var(--busbar) 50%,transparent 50%,transparent calc(75% - 1px),var(--busbar) calc(75% - 1px),var(--busbar) 75%,transparent 75%);opacity:.35}
+.clue-box>*{position:relative}
+.catname{font-family:var(--display);font-size:22px;font-weight:700;color:var(--sun)}
+.clue{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(24px,3.2vw,42px);font-weight:700;line-height:1.2;padding:18px 4px;text-wrap:balance}
+.answer{min-height:56px;text-align:center;font-family:var(--display);font-size:clamp(24px,3vw,38px);font-weight:700;border-radius:10px;padding:6px 12px}
+.answer.good{background:var(--good)}
+.answer.bad{background:var(--bad)}
+.answer.peek{background:transparent;color:rgba(255,255,255,.5);font-size:18px;font-family:var(--body);font-weight:600}
+.controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.btn.correct{background:var(--good);color:#fff;border-color:transparent}
+.btn.pass{background:var(--bad);color:#fff;border-color:transparent}
+.keys{text-align:center;color:var(--muted);margin-top:10px;font-size:14px}
+.countdown{position:fixed;inset:0;display:grid;place-items:center;background:color-mix(in srgb,var(--bg) 70%,transparent);font-family:var(--display);font-size:min(40vw,320px);font-weight:800;color:var(--sun);z-index:40;pointer-events:none}
+.countdown[hidden]{display:none}
+.intro{text-align:center;padding:clamp(24px,5vw,56px) 16px}
+.intro .vs{display:flex;justify-content:center;align-items:center;gap:clamp(16px,4vw,48px);flex-wrap:wrap;margin:10px 0 18px}
+.intro .vs .n{font-family:var(--display);font-weight:800;font-size:clamp(36px,6vw,72px);line-height:1}
+.intro .vs .x{font-family:var(--display);font-size:32px;color:var(--muted)}
+.intro .cat{font-size:22px;font-weight:600}
+.intro .cat b{color:var(--sun);font-family:var(--display);font-size:32px}
+
+/* result / champ */
+.result{text-align:center;padding:clamp(28px,6vw,64px) 16px}
+.result .w{font-family:var(--display);font-weight:800;font-size:clamp(44px,8vw,96px);line-height:1;margin:6px 0 12px}
+.result p{font-size:20px;margin:0 auto 22px;max-width:52ch;color:var(--muted)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+
+/* editor */
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);width:min(1000px,calc(100vw - 24px));max-height:calc(100vh - 40px);padding:0}
+dialog::backdrop{background:rgba(5,10,30,.6)}
+.edit{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:520px}
+@media (max-width:700px){.edit{grid-template-columns:1fr}}
+.edit .cats{border-right:1px solid var(--line);padding:16px;overflow:auto;max-height:70vh}
+.edit .cats button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+.edit .cats button.sel{background:var(--sun);color:var(--sun-ink)}
+.edit .cats button small{color:inherit;opacity:.7;font-weight:500}
+.edit .pane{padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.edit .pane textarea{min-height:340px;font-size:15px}
+.edit .foot{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;padding:14px 20px;border-top:1px solid var(--line)}
+.note{color:var(--muted);font-size:14px}
+
+.chip{border:1px dashed var(--line);background:transparent;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:600;color:var(--muted)}
+.chip b{font-family:var(--display);font-size:20px;color:var(--ink);letter-spacing:.08em}
+.err{color:var(--bad);font-weight:600;min-height:1.4em;margin:10px 0 0}
+.cover{position:absolute;inset:0;background:var(--cell);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:5}
+.cover[hidden]{display:none}
+.cover .pz{font-family:var(--display);font-size:clamp(48px,7vw,88px);font-weight:800;color:var(--sun);line-height:1}
+.controls .btn{min-height:52px}
+.remote{max-width:560px;margin:0 auto}
+.remote .panel{margin-bottom:14px}
+.remote h2{font-family:var(--display);font-size:30px;margin:0 0 6px}
+.rm-code{font-family:var(--display);font-size:40px;text-align:center;letter-spacing:.3em;max-width:220px}
+.rm-clocks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rm-p{border:3px solid transparent;border-radius:12px;padding:10px;text-align:center;background:var(--bg)}
+.rm-p.on{border-color:var(--sun)}
+.rm-p .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rm-p .t{font-family:var(--display);font-size:40px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.rm-lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.rm-clue{font-size:20px;font-weight:600;line-height:1.3;margin:14px 0 10px}
+.rm-ansbox{background:color-mix(in srgb,var(--sun) 20%,var(--surface));border:2px solid var(--sun);border-radius:12px;padding:10px 14px;margin:0 0 14px}
+.rm-ansbox .rm-lbl{color:var(--ink)}
+.rm-ans{font-family:var(--display);font-size:clamp(34px,9vw,52px);font-weight:800;line-height:1.05;color:var(--ink);margin:0}
+.rm-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rm-btns .btn{min-height:84px;font-family:var(--display);font-size:30px;font-weight:700}
+.rm-btns .full{grid-column:1/-1;min-height:56px;font-size:22px}
+.rm-status{color:var(--muted);font-weight:600}
+details.xfer{margin-top:4px}
+details.xfer summary{cursor:pointer;font-weight:600}
+details.xfer textarea{min-height:120px;font-size:13px;margin:8px 0}
+
+/* settings back end */
+.st-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.st-head h2{font-family:var(--display);font-size:34px;margin:0;line-height:1}
+.saved{color:var(--good);font-weight:600;opacity:0;transition:opacity .2s}
+.saved.on{opacity:1}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.tab{border:0;background:transparent;padding:10px 14px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;color:var(--muted)}
+.tab.sel{color:var(--ink);border-bottom-color:var(--sun)}
+.bank{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.bank{grid-template-columns:1fr}}
+.catcol{padding:12px}
+.catlist button{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+.catlist button:hover{background:var(--bg)}
+.catlist button.sel{background:var(--sun);color:var(--sun-ink)}
+.catlist button span:last-child{opacity:.7;font-weight:500;font-variant-numeric:tabular-nums}
+.addcat{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.bank h3{font-family:var(--display);font-size:24px;margin:18px 0 8px}
+.addq{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) auto;gap:8px}
+@media (max-width:600px){.addq{grid-template-columns:1fr}}
+.qtable{margin-top:8px}
+.qrow{display:grid;grid-template-columns:34px minmax(0,1.6fr) minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.qrow .num{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.qrow input{padding:8px 10px}
+.qhead{font-weight:700;color:var(--muted);font-size:14px;border-bottom:2px solid var(--line)}
+@media (max-width:600px){.qrow{grid-template-columns:28px 1fr auto}.qrow .a{grid-column:2}}
+.xbtn{border:1px solid var(--line);background:transparent;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;line-height:1}
+.xbtn:hover{border-color:var(--bad);color:var(--bad)}
+.bulk textarea{min-height:120px}
+.summary{color:var(--muted);margin-top:14px}
+.linkbtn{border:0;background:none;padding:0;color:var(--ink);text-decoration:underline;cursor:pointer;font-weight:600}
+/* team + roster */
+.banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:color-mix(in srgb,var(--sun) 18%,var(--surface));border:1px solid var(--sun);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-weight:600}
+.banner[hidden]{display:none}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.lb .nm{border:0;background:none;padding:0;text-align:left;cursor:pointer;font:inherit;font-weight:600;color:inherit}
+.lb .nm:hover{text-decoration:underline}
+.tokenrow a{color:var(--ink);font-weight:600}
+/* presenter extras */
+.rm-floor{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.rm-floor .btn{min-height:56px;font-size:18px}
+.rm-floor .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rm-floor select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+.rm-keys{color:var(--muted);font-size:14px;text-align:center;margin-top:10px}
+body.presenter header.top .toolbar{display:none}
+</style>
+</head>
+<body>
+<canvas id="confetti" hidden></canvas>
+<div class="countdown" id="countdown" hidden></div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="sunmark" aria-hidden="true"></span>
+      <h1>The Floor</h1>
+      <span class="sub" id="brandSub">Tempo Solar World sales training</span>
+    </div>
+    <div class="toolbar">
+      <button class="chip" id="btnCode" hidden>Show remote code</button>
+      <button class="btn" id="btnPresenter">Presenter window</button>
+      <button class="btn" id="btnRemote" hidden>Phone remote</button>
+      <button class="btn" id="btnSettings">Settings</button>
+      <button class="btn" id="btnEnd" hidden>End game</button>
+    </div>
+  </header>
+
+  <!-- SETUP -->
+  <section class="screen" id="setup">
+    <div class="setup">
+      <div class="panel">
+        <h2>Set up the floor</h2>
+        <p class="hint">Enter one player per line, or fill it from your team roster. Each player gets their own square and a category to defend. If there are more players than categories, categories repeat.</p>
+        <label class="f" for="names">Players</label>
+        <textarea id="names" spellcheck="false"></textarea>
+        <div style="margin-top:8px"><button class="btn" id="btnUseRoster">Fill from team roster</button></div>
+        <label class="check"><input type="checkbox" id="shuffleSeats" checked> Shuffle seats and categories</label>
+        <p class="summary" id="setupSummary"></p>
+        <div class="actions"><button class="btn primary big" id="btnStart">Start the game</button></div>
+        <p class="err" id="setupErr" role="alert"></p>
+      </div>
+      <div class="panel rules">
+        <h2>How it plays</h2>
+        <ol>
+          <li>Hit <b>Randomizer</b> to pick a challenger, or click any square to choose one yourself.</li>
+          <li>The challenger picks a neighboring square. The duel is played in the <b>defender's</b> category.</li>
+          <li>Each player has their own clock. Only the active player's clock runs. The challenger goes first.</li>
+          <li>Host judges out loud: <b>Correct</b> switches the clock to the other player. <b>Pass</b> shows the answer while their clock keeps running.</li>
+          <li>First clock to hit zero loses. The winner takes the loser's whole territory and keeps their own category.</li>
+          <li>The winner can challenge again or send it back to the Randomizer. Last one standing owns the floor.</li>
+        </ol>
+        <p class="note" style="margin-top:14px"><b>Projecting?</b> Click <b>Presenter window</b>. Drag this game window to the projector, and keep the presenter window on your laptop. It shows each answer and runs the whole game, so answers never appear on the big screen early. Set your laptop to extend the display, not mirror it.</p>
+        <p class="note" style="margin-top:10px">Keyboard in a duel: <kbd>Enter</kbd> correct, <kbd>P</kbd> pass, <kbd>Space</kbd> pause.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOARD -->
+  <section class="screen" id="board" hidden>
+    <div class="boardwrap">
+      <div>
+        <div class="status">
+          <p id="boardMsg">Pick a challenger.</p>
+          <div class="toolbar">
+            <button class="btn" id="btnCancelPick" hidden>Cancel</button>
+            <button class="btn primary big" id="btnRandom">Randomizer</button>
+          </div>
+        </div>
+        <div class="floor"><div class="grid" id="grid"></div></div>
+      </div>
+      <aside class="panel side">
+        <h3>Territory</h3>
+        <ul class="lb" id="lb"></ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- INTRO -->
+  <section class="screen" id="intro" hidden>
+    <div class="panel intro">
+      <div class="vs"><span class="n" id="inA"></span><span class="x">vs</span><span class="n" id="inB"></span></div>
+      <p class="cat">Category: <b id="inCat"></b></p>
+      <p class="note" id="inNote"></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn" id="btnBackBoard">Back to floor</button>
+        <button class="btn primary big" id="btnGo">Start duel</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DUEL -->
+  <section class="screen" id="duel" hidden>
+    <div class="duel">
+      <div class="player" id="pA"><span class="role">Challenger</span><span class="pn" id="pAn"></span><span class="clock" id="pAc">45.0</span></div>
+      <div class="clue-box">
+        <div class="catname" id="dCat"></div>
+        <div class="clue" id="clue"></div>
+        <div class="answer" id="ans"></div>
+        <div class="cover" id="pauseCover" hidden><span class="pz">Paused</span><button class="btn primary big" id="btnResume">Resume</button></div>
+      </div>
+      <div class="player" id="pB"><span class="role">Defender</span><span class="pn" id="pBn"></span><span class="clock" id="pBc">45.0</span></div>
+    </div>
+    <div class="controls">
+      <button class="btn big correct" id="btnCorrect">Correct</button>
+      <button class="btn big pass" id="btnPass">Pass</button>
+      <button class="btn" id="btnPause">Pause</button>
+      <button class="btn" id="btnPeek">Show answers on this screen</button>
+      <button class="btn" id="btnAbort">End duel</button>
+    </div>
+    <p class="keys"><kbd>Enter</kbd> correct &nbsp; <kbd>P</kbd> pass &nbsp; <kbd>Space</kbd> pause &nbsp; <kbd>H</kbd> show answers on this screen</p>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="result" hidden>
+    <div class="panel result">
+      <div class="note">Duel winner</div>
+      <div class="w" id="rWin"></div>
+      <p id="rMsg"></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn big" id="btnFloor">Back to Randomizer</button>
+        <button class="btn primary big" id="btnAgain">Challenge again</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAMPION -->
+  <section class="screen" id="champ" hidden>
+    <div class="panel result">
+      <div class="note">Owns the whole floor</div>
+      <div class="w" id="cWin"></div>
+      <p id="cMsg"></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn primary big" id="btnReplay">Play again</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS / BACK END -->
+  <section class="screen" id="settings" hidden>
+    <div class="st-head">
+      <h2>Settings</h2>
+      <div class="toolbar" style="align-items:center"><span class="saved" id="saved">Saved</span><button class="btn primary" id="btnDone">Done</button></div>
+    </div>
+    <div class="banner" id="syncBanner" hidden><span>You have changes the team can't see yet.</span><button class="btn primary" id="btnBannerShare">Share with team</button></div>
+    <div class="tabs" role="tablist">
+      <button class="tab sel" data-tab="bank" role="tab">Questions and answers</button>
+      <button class="tab" data-tab="players" role="tab">Players</button>
+      <button class="tab" data-tab="game" role="tab">Game rules</button>
+      <button class="tab" data-tab="team" role="tab">Team sharing</button>
+      <button class="tab" data-tab="xfer" role="tab">Backup</button>
+    </div>
+
+    <div id="tab-bank" class="bank">
+      <aside class="panel catcol">
+        <div class="catlist" id="catList"></div>
+        <div class="addcat">
+          <input type="text" id="newCat" placeholder="New category name" aria-label="New category name">
+          <button class="btn" id="btnAddCat">Add</button>
+        </div>
+      </aside>
+      <div class="panel">
+        <div class="row">
+          <div><label class="f" for="catName" style="margin-top:0">Category name</label><input type="text" id="catName"></div>
+          <div style="flex:0 0 auto"><button class="btn" id="btnDelCat">Delete category</button></div>
+        </div>
+        <p class="note" id="catNote" style="margin-top:8px"></p>
+        <h3>Add a question</h3>
+        <div class="addq">
+          <input type="text" id="newClue" placeholder="Clue or question" aria-label="Clue or question">
+          <input type="text" id="newAns" placeholder="Answer" aria-label="Answer">
+          <button class="btn primary" id="btnAddQ">Add</button>
+        </div>
+        <p class="err" id="addErr" style="min-height:0"></p>
+        <details class="xfer bulk">
+          <summary>Paste many questions at once</summary>
+          <p class="note">One per line, with a bar between the clue and answer. Example: Unit of power | Kilowatt</p>
+          <textarea id="bulk" spellcheck="false"></textarea>
+          <button class="btn" id="btnBulk">Add these questions</button>
+        </details>
+        <h3 id="qCount">Questions</h3>
+        <div class="qtable" id="qTable"></div>
+      </div>
+    </div>
+
+    <div id="tab-players" class="panel" hidden>
+      <h3 style="font-family:var(--display);font-size:24px;margin:0 0 6px">Team roster</h3>
+      <p class="hint">Your sales team. The setup screen fills in from this list, and it's shared with the team along with the questions.</p>
+      <div class="addq" style="grid-template-columns:minmax(0,1fr) auto;max-width:560px">
+        <input type="text" id="newPlayer" placeholder="Player name" aria-label="New player name">
+        <button class="btn primary" id="btnAddPlayer">Add</button>
+      </div>
+      <div class="qtable" id="rosterList" style="max-width:560px"></div>
+      <div id="gamePlayers" hidden>
+        <h3 style="font-family:var(--display);font-size:24px;margin:22px 0 6px">In this game</h3>
+        <p class="hint">Fix a name here and it updates on the board. You can also click a name in the Territory list during the game.</p>
+        <div class="qtable" id="gameList" style="max-width:560px"></div>
+      </div>
+    </div>
+
+    <div id="tab-team" class="panel" hidden>
+      <p class="hint" id="teamIntro"></p>
+      <div style="max-width:560px">
+        <label class="f" for="repoIn">GitHub repository</label>
+        <input type="text" id="repoIn" placeholder="yourname/tempo-floor" autocomplete="off" spellcheck="false">
+        <label class="f" for="tokenIn">Editor access token</label>
+        <input type="password" id="tokenIn" placeholder="Paste the token here" autocomplete="off" spellcheck="false">
+        <p class="note tokenrow" style="margin-top:6px">Saved only on this device, so don't save it on a shared computer. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a token on GitHub</a>, choose only this repository, and give it Contents: Read and write.</p>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button class="btn primary" id="btnPublish">Share my changes with the team</button>
+        <button class="btn" id="btnPull">Get the latest from the team</button>
+      </div>
+      <p class="note" id="teamMsg" style="margin-top:12px" role="status"></p>
+    </div>
+
+    <div id="tab-game" class="panel" hidden>
+      <div class="row" style="max-width:560px">
+        <div><label class="f" for="duelTime">Seconds per player</label><input type="number" id="duelTime" min="10" max="180"></div>
+        <div><label class="f" for="passPen">Pass penalty (seconds)</label><input type="number" id="passPen" min="0" max="15"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="sound"> Sound effects</label>
+      <p class="note" style="margin-top:14px">Changes apply starting with the next duel. The show uses 45 seconds and a 3-second pass.</p>
+    </div>
+
+    <div id="tab-xfer" class="panel" hidden>
+      <p class="hint">Questions save on this device. To copy them to another device, or keep a backup, copy this code and paste it into the same box on the other device.</p>
+      <textarea id="xferBox" spellcheck="false" style="min-height:140px"></textarea>
+      <div class="toolbar" style="margin-top:8px">
+        <button class="btn" id="btnExport">Fill box with my questions</button>
+        <button class="btn" id="btnImport">Replace my questions with the box</button>
+      </div>
+      <p class="note" id="xferMsg"></p>
+      <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+      <button class="btn" id="btnResetQ">Restore the original questions</button>
+    </div>
+  </section>
+
+  <!-- REMOTE / PRESENTER -->
+  <section class="screen remote" id="remote" hidden>
+    <div class="panel" id="rmSetup">
+      <h2>Phone remote</h2>
+      <p class="hint">Enter the 4-digit code from the game screen. Tap <b>Show remote code</b> at the top of that screen to see it.</p>
+      <div class="row" style="align-items:center">
+        <input type="text" inputmode="numeric" maxlength="4" class="rm-code" id="rmCode" autocomplete="off" aria-label="Remote code">
+        <button class="btn primary big" id="rmConnect">Connect</button>
+      </div>
+      <p class="err" id="rmErr" role="alert"></p>
+    </div>
+    <div class="panel" id="rmLive" hidden>
+      <p class="rm-status" id="rmStatus"></p>
+      <div id="rmFloor" class="rm-floor"></div>
+      <div id="rmDuel" hidden>
+        <div class="catname" id="rmCat" style="color:var(--sun)"></div>
+        <div class="rm-clocks">
+          <div class="rm-p" id="rmA"><div class="n" id="rmAn"></div><div class="t" id="rmAt"></div></div>
+          <div class="rm-p" id="rmB"><div class="n" id="rmBn"></div><div class="t" id="rmBt"></div></div>
+        </div>
+        <div class="rm-clue"><span class="rm-lbl">Question on screen</span><span id="rmClue"></span></div>
+        <div class="rm-ansbox"><span class="rm-lbl">Answer (only you see this)</span><p class="rm-ans" id="rmAns"></p></div>
+        <div class="rm-btns">
+          <button class="btn correct" id="rmCorrect">Correct</button>
+          <button class="btn pass" id="rmPass">Pass</button>
+          <button class="btn full" id="rmPause">Pause</button>
+          <button class="btn full" id="rmAbort" style="min-height:44px;font-size:16px;font-family:var(--body)">End duel with no winner</button>
+        </div>
+        <p class="rm-keys" id="rmKeys" hidden><kbd>Enter</kbd> correct &nbsp; <kbd>P</kbd> pass &nbsp; <kbd>Space</kbd> pause</p>
+      </div>
+    </div>
+    <div style="text-align:center"><button class="btn" id="rmExit">Leave remote mode</button></div>
+  </section>
+</div>
+
+<dialog id="rename" style="max-width:440px">
+  <div style="padding:22px">
+    <label for="rnIn" id="rnMsg" style="display:block;font-size:18px;font-weight:600;margin:0 0 12px"></label>
+    <input type="text" id="rnIn" autocomplete="off">
+    <div class="toolbar" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn" id="rnNo">Cancel</button>
+      <button class="btn primary" id="rnOk">Save</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="confirm" style="max-width:440px">
+  <div style="padding:22px">
+    <p id="cfMsg" style="font-size:18px;font-weight:600;margin:0 0 18px"></p>
+    <div class="toolbar" style="justify-content:flex-end">
+      <button class="btn" id="cfNo">Cancel</button>
+      <button class="btn primary" id="cfOk">OK</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+const DEFAULTS = [
+[
+"Tempo Solar World",
+"Tempo Solar World's CEO | Drake Dipuzo\nCity where Tempo is based | Las Vegas\nStreet the Tempo office is on | E Patrick Ln\nSuite letter of the Tempo office | Suite G\nTempo's main phone number | 702-847-7288\nCustomer help email | help@temposolarworld.com\nState board that licenses Tempo | NSCB (Nevada State Contractors Board)\nTempo's two licensed trades | Solar and electrical\nEither of Tempo's NSCB license numbers | C2-44494 or C25-876672\nSoftware used to design systems and build proposals | OpenSolar\nUtility almost all of our customers are with | NV Energy"
+],
+[
+"Objections",
+"\"I need to think about it.\" | Find the real concern and isolate it\n\"Solar is too expensive.\" | Compare to what they already pay the utility; $0-down options\n\"I need to talk to my spouse.\" | Book a time with both decision-makers\n\"I'm moving in a couple years.\" | Adds home value; agreements can transfer to the buyer\n\"My roof is old.\" | Inspect it; plan roof work before install\n\"I got burned by a solar company before.\" | Build trust: licensed, transparent, show proof\n\"Just leave me some info.\" | Stay engaged and book a specific follow-up\n\"What if it breaks?\" | Warranties plus monitoring\n\"Power rates won't go up much.\" | Show their bill history and rate trends\n\"Let me get other quotes.\" | Welcome it; compare apples to apples and highlight value\n\"I don't want a lien on my house.\" | Explain what's actually filed and that it's on the equipment, not a mortgage\n\"My HOA won't allow it.\" | Nevada law bars HOAs from banning solar; we handle the HOA application\n\"I'm not interested.\" | Ask a curious question about their power bill"
+],
+[
+"Solar Panels",
+"Device that converts the panels' DC power into AC for the home | Inverter\nUnit of power equal to 1,000 watts | Kilowatt (kW)\nUnit of energy printed on the power bill | Kilowatt-hour (kWh)\nIn Nevada, the best direction for panels to face | South\nMaterial most solar cells are made from | Silicon\nUniform black panel type with the highest efficiency | Monocrystalline\nTwenty 400-watt panels make a system of this size | 8 kW\nSmall inverter mounted under each panel | Microinverter\nRails and mounts that attach panels to the roof | Racking\nMetal piece that waterproofs a roof penetration | Flashing\nWhy grid-tied panels shut off in an outage | Anti-islanding (protects line workers)\nWhat % of the home's usage the system covers | Offset\nVery common roof type on Las Vegas homes | Concrete tile"
+],
+[
+"HOA",
+"What HOA stands for | Homeowners association\nCan a Nevada HOA ban solar outright? | No (it can set reasonable rules)\nHOA committee that reviews exterior changes | Architectural review committee (ARC)\nWhen HOA approval should be in hand | Before install\nDocuments usually sent with an HOA application | Site plan / panel layout and equipment spec sheets\nWho usually submits the HOA application | Tempo, on the customer's behalf\nWhat the customer must sign on most HOA applications | The owner's signature / authorization\nWhy installing before HOA approval is a problem | Fines, forced changes, and customer complaints\nCommon HOA request about panel placement | Keep panels off the street-facing side when possible\nWhat to ask at the door if they mention an HOA | Who their HOA is and if neighbors already have solar\nFirst thing to check when an HOA application stalls | Follow up and confirm nothing is missing"
+],
+[
+"Incentives",
+"Federal homeowner solar tax credit that ended after 2025 | Residential Clean Energy Credit (25D)\nLast year homeowners could claim the 25D credit | 2025\nWhy PPAs and leases still carry a tax-credit benefit | The system owner claims the commercial credit and passes savings on\nDate projects had to begin construction by to lock in the commercial credit | July 4, 2026\nNV Energy credit rate for exported solar for new customers | 75% of the retail rate\nNevada law that brought back net metering in 2017 | AB 405\nTerm for exported power that earns a bill credit | Net metering\nWho claims the tax credit on a LightReach PPA | The system owner, not the homeowner\nIs a tax credit the same as a rebate? | No; it reduces taxes owed\nWhy reps should never promise a customer a tax credit | Eligibility depends on their tax situation; send them to a tax pro"
+],
+[
+"PPA LightReach",
+"What PPA stands for | Power purchase agreement\nCompany behind LightReach | Palmetto\nWhat the homeowner pays for in a PPA | Each kWh the system produces\nWho owns the system in a LightReach PPA | LightReach (the third party), not the homeowner\nUpfront cost to the homeowner | $0\nYearly price increase built into some PPAs | Escalator\nWho handles repairs on a PPA system | The system owner (LightReach)\nWhat happens to the PPA when the home is sold | It transfers to the buyer or gets bought out\nPrice we compare the PPA rate against | Their NV Energy rate per kWh\nDoes the homeowner get the tax credit on a PPA? | No\nWhat PPW stands for in PPA pricing | Price per watt\nMain selling point of a PPA vs a loan | No ownership costs and a lower rate than the utility from day one"
+],
+[
+"PTO Timeline",
+"What PTO stands for | Permission to Operate\nWho grants PTO | NV Energy\nFirst call the customer gets after signing | Welcome call\nStep right after the welcome call | Site survey\nOffice that issues the building permit | City or county building department (AHJ)\nFinal visit before we request PTO | City/county inspection\nWhat NV Energy swaps out before PTO | The meter (for a net meter)\nApplication to connect to the grid | Interconnection application\nCan the customer turn the system on before PTO? | No\nOrder of these: install, permit, PTO | Permit, install, PTO\nBest way to keep a customer calm during the wait | Set expectations early and update them at each milestone\nStep where the system goes on the roof | Install"
+],
+[
+"Commissions & Pay",
+"Base price per watt the company keeps before rep pay | Redline\nWhat PPW stands for | Price per watt\nSold at $3.50/W, redline $2.80/W, 8 kW system. Commission? | $5,600\nSold at $3.20/W, redline $2.90/W, 10 kW system. Commission? | $3,000\nExtra job costs that can lower commission | Adders\nPay taken back when a deal cancels | Clawback / chargeback\nA 6 kW system is how many watts? | 6,000\nPay released at set points in the project | Milestone payments\nRaising PPW by $0.10 on a 7 kW system adds how much? | $700\nRep who books the appointment | Setter\nRep who runs the appointment and closes | Closer"
+],
+[
+"Loan",
+"Who owns the system with a loan | The homeowner\nSungage Financial provides this product | Solar loans\nFee the lender charges the installer to offer a rate | Dealer fee\nCredit check that doesn't affect the customer's score | Soft pull\nAnnual cost of borrowing, including fees | APR\nMain loan advantage over a PPA | Ownership and long-term savings\nFiling a lender may record on the solar equipment | UCC-1 (fixture filing)\nWhat the customer should compare the loan payment to | Their current power bill\nWho handles repairs on a loan system after warranty | The homeowner\nCan a loan usually be paid off early? | Yes, with no prepayment penalty on most solar loans (confirm terms)\nLonger loan term means a lower payment but more what? | Total interest"
+],
+[
+"Pearl Certificate",
+"Company that certifies a home's solar and energy features | Pearl\nWho the Pearl report helps when the home is sold | Appraisers and buyers\nMain benefit of Pearl Certification to the homeowner | Proves added home value at resale\nPearl Certification levels, lowest to highest | Silver, Gold, Platinum\nWhat Pearl documents about the solar system | Equipment, quality, and expected performance\nWhen a Pearl certificate is most useful | Selling or refinancing the home\nWhy mention Pearl at the kitchen table | It answers the \"does solar help my home value?\" question"
+],
+[
+"Adders",
+"What an adder is | An extra cost added to the system price for job-specific work\nUpgrading the main panel to handle solar | Main panel upgrade (MPU)\nAdder for mounting on a concrete tile roof | Tile roof adder\nAdder for digging a line from a ground array | Trenching\nAdder for adding home backup | Battery\nHow adders usually affect rep pay | They raise job cost and can lower commission\nWhen adders should be caught | At the site survey, before the deal is final\nAdder for replacing or repairing the roof first | Re-roof\nAdder when panels mount on the ground instead of the roof | Ground mount\nWhy disclose adders early | Avoid surprises, cancellations, and complaints"
+],
+[
+"Tie Downs",
+"What a tie-down is | A short question at the end of a statement that gets a yes\nFinish it: \"Saving money matters to you, ___?\" | doesn't it?\nFinish it: \"That payment's lower than your bill, ___?\" | isn't it?\nFinish it: \"You'd rather own your power, ___?\" | wouldn't you?\nMain purpose of a tie-down | Build small agreements toward the close\nTie-down that goes at the start of a sentence | Inverted tie-down (\"Isn't it nice when…\")\nHow many tie-downs is too many | When it sounds scripted or pushy\nTurn it into a tie-down: \"NV Energy keeps raising rates.\" | NV Energy keeps raising rates, don't they?\nWhat you should do after a tie-down gets a yes | Move forward to the next step"
+],
+[
+"Cash Payment",
+"Main reason to pay cash for solar | Lowest total cost and best savings\nWho owns the system with a cash purchase | The homeowner\nInterest paid on a cash purchase | None\nTime it takes for savings to cover the system cost | Payback period\nCash is usually paid in parts tied to these | Project milestones\nWhat the customer should get for every payment | A receipt / written record\nWho handles repairs after warranties end on a cash system | The homeowner\nDoes a cash customer get the federal 25D credit on a 2026 install? | No, it ended after 2025\nCash buyer's return on investment abbreviation | ROI"
+],
+[
+"Warranties",
+"Warranty that covers defects in the panel itself | Product warranty\nWarranty that guarantees panel output over time | Performance warranty\nTypical length of a panel performance warranty | 25 years\nWarranty that covers the installer's work | Workmanship warranty\nWarranty that covers leaks from roof mounts | Roof penetration warranty\nEnphase microinverter warranty length | 25 years\nWho handles warranty on a LightReach PPA system | LightReach (system owner)\nWhat monitoring helps catch before it's a big problem | Production drops\nWhy walk through warranties at the close | Removes the \"what if it breaks\" fear"
+],
+[
+"Ice Breakers",
+"First thing to do after the door opens | Smile, step back, and introduce yourself\nWhy comment on something at the home | Builds rapport fast\nGood way to mention the neighborhood | \"We're helping a few of your neighbors on this street\"\nEasy opener in a Vegas summer | Ask about their summer power bill\nHomeowner is busy or has kids at the door | Keep it short and offer a better time\nHomeowner is working in the yard | Compliment the work and keep it casual\nWhy use their name once you have it | Makes it personal and builds trust\nWhat to avoid in the first 10 seconds | Launching straight into a pitch\nDoor hanger or card is for | No-answer doors and follow-ups\nBest body language at the door | Open, relaxed, angled to the side"
+],
+[
+"Leading Questions",
+"What a leading question does | Guides the homeowner toward a conclusion\nQuestion type that gets them talking | Open-ended question\nQuestion that tells you who controls the bill | \"Who takes care of the power bill?\"\nLeading question about the bill | \"Has your bill been going up lately?\"\nQuestion that surfaces the pain | \"What's your highest summer bill been?\"\nQuestion that checks commitment | \"If the numbers make sense, is there any reason we couldn't get started today?\"\nQuestion to test ownership interest | \"Would you rather rent your power or own it?\"\nQuestion that checks timing | \"How long are you planning to stay in the home?\"\nQuestion to confirm value before price | \"Does this look like it would help your family?\"\nWhat to do after asking a question | Stop talking and listen"
+],
+[
+"Fenix Sun",
+""
+],
+[
+"OpenSolar",
+"What OpenSolar is used for | Designing systems and building proposals\nOpenSolar area where you lay out panels on the roof | Studio (design)\nTool that estimates lost production from trees and chimneys | Shading analysis\nImagery OpenSolar uses to see the roof | Satellite / aerial imagery\nWhat the customer can do with an online OpenSolar proposal | Review and sign it\nNumber that shows how much of their usage the design covers | Offset\nCustomer info needed for an accurate design | 12 months of usage (the power bill)\nWhat to check before sending a proposal | Panel count, offset, pricing, and financing option\nWhere pricing and payment options show for the customer | The proposal\nWhy use actual usage instead of a guess | So the system isn't over- or under-sized"
+]
+];
+
+/* ---------- Storage (per-device) ---------- */
+const KEY='tempoFloor.';
+function load(k){try{const v=localStorage.getItem(KEY+k);return v?JSON.parse(v):null}catch(e){return null}}
+function store(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v));return true}catch(e){return false}}
+function parseCats(arr){return arr.map(([name,txt])=>({name,q:parseLines(txt)}))}
+function parseLines(txt){return String(txt).split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.lastIndexOf('|');return i<0?[l,'']:[l.slice(0,i).trim(),l.slice(i+1).trim()]}).filter(q=>q[0])}
+function validCats(c){return Array.isArray(c)&&c.length>0&&c.every(x=>x&&typeof x.name==='string'&&Array.isArray(x.q))}
+function cleanCats(c){return c.map(x=>({name:String(x.name).trim()||'Untitled',q:x.q.filter(Array.isArray).map(q=>[String(q[0]||'').trim(),String(q[1]||'').trim()]).filter(q=>q[0])}))}
+
+let CATS=load('bank2'); CATS=validCats(CATS)?cleanCats(CATS):parseCats(DEFAULTS);
+let ROSTER=load('roster'); ROSTER=Array.isArray(ROSTER)?ROSTER.map(String).filter(Boolean):[];
+function detectRepo(){
+  const h=location.hostname.toLowerCase(); if(!/\.github\.io$/.test(h)) return '';
+  const owner=h.split('.')[0]; const seg=location.pathname.split('/').filter(Boolean)[0];
+  return owner+'/'+((seg&&!/\.html?$/i.test(seg))?seg:h);
+}
+const TEAM={file:'floor-data.json',hosted:/\.github\.io$/i.test(location.hostname),repo:load('repo')||detectRepo(),token:load('token')||'',seen:load('teamSeen')||null,dirty:!!load('dirty')};
+let settings=Object.assign({duel:45,pass:3,sound:true,shuffle:true},load('settings')||{});
+let G=null, D=null, raf=null, last=0, peekPref=false;
+
+/* ---------- Helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function visible(){const s=[...document.querySelectorAll('.screen')].find(x=>!x.hidden);return s?s.id:''}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!==id);
+  window.scrollTo(0,0);
+  const ctl=id==='remote';
+  $('#btnEnd').hidden=!G||id==='setup'||ctl;
+  $('#btnRemote').hidden=ctl||!ROOM.ns;
+  $('#btnPresenter').hidden=ctl;
+  $('#btnSettings').hidden=ctl||id==='settings';
+  $('#btnCode').hidden=!ROOM.ns||ctl;
+  broadcast();
+}
+/* In-page confirm (browser pop-ups can be blocked) */
+function ask(msg,okLabel){
+  return new Promise(res=>{
+    const d=$('#confirm');$('#cfMsg').textContent=msg;$('#cfOk').textContent=okLabel||'OK';
+    const done=v=>{d.oncancel=null;$('#cfOk').onclick=null;$('#cfNo').onclick=null;if(d.open)d.close();res(v)};
+    $('#cfOk').onclick=()=>done(true);$('#cfNo').onclick=()=>done(false);
+    d.oncancel=e=>{e.preventDefault();done(false)};
+    d.showModal();$('#cfNo').focus();
+  });
+}
+
+/* ---------- Sound ---------- */
+let AC=null;
+function beep(freq,dur,type='sine',vol=.18){
+  if(!settings.sound||ROOM.mode!=='stage') return;
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended') AC.resume();
+    const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+dur);
+    o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+dur);}catch(e){}
+}
+const sfx={correct(){beep(880,.12);setTimeout(()=>beep(1320,.18),90)},pass(){beep(220,.25,'square',.08)},
+  tick(){beep(1000,.05,'square',.06)},buzz(){beep(140,.9,'sawtooth',.14)},go(){beep(660,.12)},
+  win(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.25),i*140))}};
+
+/* ---------- Setup ---------- */
+function setupSummary(){
+  const playable=CATS.filter(c=>c.q.length).length, empty=CATS.length-playable;
+  $('#setupSummary').innerHTML=`${settings.duel} seconds per player, ${settings.pass}-second pass penalty, ${playable} categories in play${empty?` (${empty} empty ${empty>1?'categories':'category'} skipped until you add questions)`:''}. <button class="linkbtn" id="lnkRules">Change in Settings</button>`;
+  $('#lnkRules').onclick=()=>openSettings('game');
+}
+function initSetup(){
+  const saved=load('names');
+  $('#names').value = saved || (ROSTER.length?ROSTER.join('\n'):Array.from({length:12},(_,i)=>'Player '+(i+1)).join('\n'));
+  $('#shuffleSeats').checked=settings.shuffle;
+  $('#setupErr').textContent='';
+  setupSummary();
+}
+function startGame(){
+  let names=$('#names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(names.length<2){$('#setupErr').textContent='Add at least 2 players, one per line.';return}
+  if(names.length>36){$('#setupErr').textContent='Keep it to 36 players or fewer.';return}
+  if(!CATS.some(c=>c.q.length)){$('#setupErr').textContent='Add some questions in Settings first.';return}
+  $('#setupErr').textContent='';
+  settings.shuffle=$('#shuffleSeats').checked;
+  store('settings',settings); store('names',$('#names').value);
+  if(settings.shuffle) names=shuffle(names.slice());
+  const n=names.length, cols=Math.ceil(Math.sqrt(n)), rows=Math.ceil(n/cols);
+  let order=CATS.map((_,i)=>i).filter(i=>CATS[i].q.length); if(settings.shuffle) shuffle(order);
+  const players=names.map((name,i)=>({id:i,name,cat:order[i%order.length],hue:Math.round((i*360/n+200)%360),alive:true}));
+  const cells=[];for(let i=0;i<rows*cols;i++) cells.push({r:Math.floor(i/cols),c:i%cols,owner:i<n?i:null});
+  G={players,cells,rows,cols,pools:{},challenger:null,defender:null,phase:'idle',lastWinner:null,msg:''};
+  toBoard();
+}
+async function endGame(){
+  if(D&&D.started&&!D.over&&!D.paused) setPaused(true);
+  const ok=await ask('End this game? Everyone\'s squares will be cleared.','End game');
+  if(!ok) return;
+  stopDuel(); G=null; initSetup(); show('setup');
+}
+
+/* ---------- Board ---------- */
+function ownerAt(r,c){if(r<0||c<0||r>=G.rows||c>=G.cols) return null;const cell=G.cells[r*G.cols+c];return cell?cell.owner:null}
+function neighborsOf(pid){
+  const s=new Set();
+  G.cells.forEach(cell=>{if(cell.owner!==pid) return;
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{const o=ownerAt(cell.r+dr,cell.c+dc);if(o!=null&&o!==pid) s.add(o)})});
+  return [...s];
+}
+function alive(){return G.players.filter(p=>p.alive)}
+function catName(i){return CATS[i]?CATS[i].name:'Category'}
+function renderBoard(){
+  const g=$('#grid'); g.style.gridTemplateColumns=`repeat(${G.cols},minmax(0,1fr))`; g.innerHTML='';
+  const targets=G.phase==='pick'?neighborsOf(G.challenger):[];
+  G.cells.forEach(cell=>{
+    const b=document.createElement('button'); b.className='tile';
+    if(cell.owner==null){b.classList.add('empty');b.disabled=true;b.setAttribute('aria-hidden','true');g.appendChild(b);return}
+    const p=G.players[cell.owner];
+    b.style.setProperty('--h',p.hue);
+    const w=o=>o===cell.owner?'0':'3px';
+    b.style.borderWidth=`${w(ownerAt(cell.r-1,cell.c))} ${w(ownerAt(cell.r,cell.c+1))} ${w(ownerAt(cell.r+1,cell.c))} ${w(ownerAt(cell.r,cell.c-1))}`;
+    b.innerHTML=`<span class="tn">${esc(p.name)}</span><span class="tc">${esc(catName(p.cat))}</span>`;
+    b.setAttribute('aria-label',`${p.name}, ${catName(p.cat)}`);
+    if(G.phase==='pick'){
+      if(p.id===G.challenger) b.classList.add('hot');
+      else if(targets.includes(p.id)) b.classList.add('target');
+      else b.classList.add('dim');
+    }
+    b.onclick=()=>tileClick(p.id);
+    g.appendChild(b);
+  });
+  const counts={};G.cells.forEach(c=>{if(c.owner!=null) counts[c.owner]=(counts[c.owner]||0)+1});
+  const list=G.players.slice().sort((a,b)=>(b.alive-a.alive)||((counts[b.id]||0)-(counts[a.id]||0)));
+  $('#lb').innerHTML=list.map(p=>`<li class="${p.alive?'':'out'}"><span class="sw" style="background:hsl(${p.hue} 68% 40%)"></span><button class="nm" data-rn="${p.id}" title="Rename ${esc(p.name)}">${esc(p.name)}</button><span class="ct">${counts[p.id]||0}</span></li>`).join('');
+  $('#btnCancelPick').hidden=G.phase!=='pick';
+  $('#btnRandom').disabled=G.phase==='spin';
+  G.msg = G.phase==='pick'
+    ? `${G.players[G.challenger].name} is up. Pick a flashing square to challenge.`
+    : G.phase==='spin' ? 'Randomizer is spinning…'
+    : `${alive().length} players left. Hit Randomizer or pick a challenger.`;
+  $('#boardMsg').textContent=G.msg;
+  broadcast();
+}
+function toBoard(){if(!G) return;G.phase='idle';G.challenger=null;renderBoard();show('board')}
+function tileClick(pid){
+  if(G.phase==='spin') return;
+  if(G.phase==='pick'){
+    if(pid===G.challenger) return;
+    if(neighborsOf(G.challenger).includes(pid)){G.defender=pid;toIntro()}
+    return;
+  }
+  setChallenger(pid);
+}
+function setChallenger(pid){if(!G.players[pid]||!G.players[pid].alive) return;G.challenger=pid;G.phase='pick';renderBoard()}
+function randomize(){
+  const pool=alive(); if(pool.length<2||G.phase==='spin') return;
+  G.phase='spin'; renderBoard();
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const final=pool[Math.floor(Math.random()*pool.length)].id;
+  let steps=reduce?1:18+Math.floor(Math.random()*6), delay=60, cur=null;
+  const step=()=>{
+    if(!G||G.phase!=='spin') return;
+    cur = steps<=1 ? final : pool[Math.floor(Math.random()*pool.length)].id;
+    document.querySelectorAll('#grid .tile').forEach((t,i)=>{const o=G.cells[i].owner;t.classList.toggle('hot',o===cur);t.classList.toggle('dim',o!=null&&o!==cur)});
+    beep(500+Math.random()*300,.04,'square',.05);
+    if(--steps>0){delay*=1.12;setTimeout(step,delay)} else setTimeout(()=>{if(G&&G.phase==='spin'){sfx.go();setChallenger(final)}},350);
+  };
+  step();
+}
+
+/* ---------- Intro ---------- */
+function toIntro(){
+  const a=G.players[G.challenger],b=G.players[G.defender];
+  $('#inA').textContent=a.name;$('#inB').textContent=b.name;$('#inCat').textContent=catName(b.cat);
+  $('#inNote').textContent=`${a.name} goes first. ${settings.duel} seconds each.`;
+  G.msg=`Next duel: ${a.name} vs ${b.name} in ${catName(b.cat)}.`;
+  show('intro');
+}
+
+/* ---------- Duel ---------- */
+function drawQ(cat){
+  const qs=CATS[cat]?CATS[cat].q:[]; const n=qs.length; let p=G.pools[cat];
+  if(!n) return ['(No questions in this category yet)','Add some in Settings'];
+  if(!p||p.pos>=p.order.length||p.order.length!==n){p=G.pools[cat]={order:shuffle([...Array(n).keys()]),pos:0}}
+  return qs[p.order[p.pos++]];
+}
+function startDuel(){
+  stopDuel();
+  D={p:[G.challenger,G.defender],time:[settings.duel,settings.duel],active:0,cat:G.players[G.defender].cat,
+     started:false,paused:false,flash:0,penalty:0,locked:true,q:null,peek:peekPref,lastSec:[99,99],over:false,seq:0,cdIv:null,loser:null};
+  $('#pAn').textContent=G.players[D.p[0]].name;$('#pBn').textContent=G.players[D.p[1]].name;
+  $('#dCat').textContent=catName(D.cat);$('#clue').textContent='Get ready';setAns('');
+  $('#btnPeek').textContent=D.peek?'Hide answers on this screen':'Show answers on this screen';
+  setPausedUI(); renderDuel(); show('duel');
+  const cd=$('#countdown'); let n=3; cd.hidden=false; cd.textContent=n; beep(440,.15);
+  D.cdIv=setInterval(()=>{
+    if(!D) return;
+    n--;
+    if(n>0){cd.textContent=n;beep(440,.15)}
+    else{clearInterval(D.cdIv);D.cdIv=null;cd.hidden=true;sfx.go();D.started=true;D.locked=false;nextClue();last=performance.now();raf=requestAnimationFrame(loop)}
+  },800);
+}
+function stopDuel(){
+  if(!D) return;
+  D.over=true; if(D.cdIv) clearInterval(D.cdIv); cancelAnimationFrame(raf);
+  $('#countdown').hidden=true; D=null;
+}
+function setAns(text,cls){const a=$('#ans');a.textContent=text;a.className='answer'+(cls?' '+cls:'')}
+function showPeek(){if(D&&D.q) setAns(D.peek?'Answer: '+D.q[1]:'',D.peek?'peek':'')}
+function nextClue(){D.seq++;D.q=drawQ(D.cat);$('#clue').textContent=D.q[0];showPeek();broadcast()}
+function renderDuel(){
+  if(!D) return;
+  ['A','B'].forEach((k,i)=>{
+    const t=Math.max(0,D.time[i]);const c=$('#p'+k+'c');c.textContent=t.toFixed(1);c.classList.toggle('low',t<=5);
+    const on=D.started&&D.active===i&&D.flash<=0;
+    $('#p'+k).classList.toggle('active',on);$('#p'+k).classList.toggle('idle',D.started&&!on);
+  });
+}
+function loop(now){
+  if(!D||D.over) return;
+  const dt=Math.min(.1,(now-last)/1000); last=now;
+  if(!D.paused){
+    if(D.flash>0){D.flash-=dt; if(D.flash<=0){D.flash=0;D.active=1-D.active;D.locked=false;nextClue()}}
+    else{
+      const i=D.active; D.time[i]-=dt;
+      const sec=Math.ceil(D.time[i]); if(sec<=5&&sec>0&&sec<D.lastSec[i]){D.lastSec[i]=sec;sfx.tick()}
+      if(D.penalty>0){D.penalty-=dt;if(D.penalty<=0&&D.time[i]>0){D.penalty=0;D.locked=false;nextClue()}}
+      if(D.time[i]<=0){D.time[i]=0;renderDuel();endDuel(i);return}
+    }
+  }
+  renderDuel();
+  if(now-ROOM.lastB>450) broadcast();
+  raf=requestAnimationFrame(loop);
+}
+function correct(){if(!D||!D.started||D.locked||D.paused||D.over) return;D.locked=true;sfx.correct();setAns(D.q[1],'good');D.flash=.7;broadcast()}
+function pass(){if(!D||!D.started||D.locked||D.paused||D.over) return;D.locked=true;sfx.pass();setAns(D.q[1],'bad');D.penalty=Math.max(.3,settings.pass);broadcast()}
+function setPausedUI(){
+  const p=!!(D&&D.paused);
+  $('#pauseCover').hidden=!p;
+  $('#btnPause').textContent=p?'Resume':'Pause';
+  $('#btnCorrect').disabled=p;$('#btnPass').disabled=p;
+}
+function setPaused(v){
+  if(!D||!D.started||D.over) return;
+  D.paused=v; last=performance.now();
+  setPausedUI(); renderDuel(); broadcast();
+}
+function togglePause(){if(D) setPaused(!D.paused)}
+function togglePeek(){if(!D) return;D.peek=!D.peek;peekPref=D.peek;$('#btnPeek').textContent=D.peek?'Hide answers on this screen':'Show answers on this screen';
+  if(D.flash<=0&&D.penalty<=0) showPeek()}
+async function abortDuel(){
+  if(!D) return;
+  if(D.started&&!D.over&&!D.paused) setPaused(true);
+  const ok=await ask('End this duel with no winner? Both players keep their squares.','End duel');
+  if(!ok) return;
+  stopDuel(); toBoard();
+}
+function endDuel(li){
+  D.over=true;D.loser=li;cancelAnimationFrame(raf);sfx.buzz();
+  if(D.q) setAns('Answer: '+D.q[1],'bad');
+  broadcast();
+  const loser=D.p[li],winner=D.p[1-li];
+  let taken=0;G.cells.forEach(c=>{if(c.owner===loser){c.owner=winner;taken++}});
+  G.players[loser].alive=false;G.lastWinner=winner;
+  const wName=G.players[winner].name,lName=G.players[loser].name,left=alive().length;
+  setTimeout(()=>{
+    D=null;
+    if(!G) return;
+    if(left===1){
+      $('#cWin').textContent=wName;
+      $('#cMsg').textContent=`${wName} took all ${G.cells.filter(c=>c.owner!=null).length} squares. Nice work, champ.`;
+      G.msg=`${wName} owns the floor!`;
+      show('champ');sfx.win();confetti();return;
+    }
+    $('#rWin').textContent=wName;
+    $('#rMsg').textContent=`${lName} is out. ${wName} takes ${taken} square${taken>1?'s':''} and keeps ${catName(G.players[winner].cat)}. ${left} players left.`;
+    $('#btnAgain').textContent=`${wName} challenges again`;
+    G.msg=`${wName} beat ${lName}. ${left} players left.`;
+    show('result');sfx.win();
+  },1400);
+}
+
+/* ---------- Confetti ---------- */
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv=$('#confetti'),ctx=cv.getContext('2d');cv.hidden=false;cv.width=innerWidth;cv.height=innerHeight;
+  const ps=Array.from({length:180},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height,v:2+Math.random()*4,w:6+Math.random()*6,h:8+Math.random()*10,r:Math.random()*6,s:(Math.random()-.5)*.2,c:['#ffb31f','#f5a300','#34c77b','#6aa8ff','#ffffff'][Math.floor(Math.random()*5)]}));
+  const t0=performance.now();
+  (function f(t){ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{p.y+=p.v;p.r+=p.s;p.x+=Math.sin(p.r)*1.2;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});
+    if(t-t0<5000) requestAnimationFrame(f); else {ctx.clearRect(0,0,cv.width,cv.height);cv.hidden=true}})(t0);
+}
+
+/* ---------- Links to the host: presenter window (same computer) and phone remote (Claude link) ---------- */
+const ROOM={ns:null,mode:location.hash==='#presenter'?'presenter':'stage',code:String(1000+Math.floor(Math.random()*9000)),lastB:0};
+const PRES={win:null};
+
+function stagePayload(){
+  const d={code:ROOM.code,screen:visible()};
+  if(D){Object.assign(d,{duel:true,seq:D.seq,started:D.started,cat:catName(D.cat),clue:D.q?D.q[0]:'',ans:D.q?D.q[1]:'',
+    names:D.p.map(i=>G.players[i].name),time:D.time.map(t=>Math.max(0,Math.round(t*10)/10)),active:D.active,
+    paused:D.paused,busy:D.flash>0||D.penalty>0,over:D.over});return d}
+  d.msg=G?(G.msg||''):'Setting up the game.';
+  if(!G) return d;
+  if(d.screen==='board'){
+    d.phase=G.phase;
+    if(G.phase==='idle') d.players=alive().map(p=>({id:p.id,n:p.name}));
+    if(G.phase==='pick') d.targets=neighborsOf(G.challenger).map(i=>({id:i,n:G.players[i].name,c:catName(G.players[i].cat)}));
+  }
+  if(d.screen==='result'&&G.lastWinner!=null) d.winner=G.players[G.lastWinner].name;
+  return d;
+}
+function broadcast(){
+  if(ROOM.mode!=='stage') return;
+  ROOM.lastB=performance.now();
+  const p=stagePayload();
+  if(ROOM.ns){try{ROOM.ns.emit('stage',p).catch(()=>{})}catch(e){}}
+  if(PRES.win&&!PRES.win.closed){try{PRES.win.postMessage({src:'tempoFloor',type:'stage',d:p},'*')}catch(e){}}
+}
+function handleCmd(d){
+  if(ROOM.mode!=='stage'||!d) return;
+  const scr=visible();
+  switch(d.a){
+    case 'hello': broadcast(); return;
+    case 'correct': if(D&&d.seq===D.seq) correct(); return;
+    case 'pass': if(D&&d.seq===D.seq) pass(); return;
+    case 'pause': setPaused(true); return;
+    case 'resume': setPaused(false); return;
+    case 'abort': if(D){stopDuel();toBoard()} return;
+  }
+  if(!G) return;
+  if(scr==='board'){
+    if(d.a==='random'&&G.phase!=='spin') randomize();
+    else if(d.a==='challenger'&&G.phase!=='spin') setChallenger(+d.id);
+    else if(d.a==='target'&&G.phase==='pick'&&neighborsOf(G.challenger).includes(+d.id)){G.defender=+d.id;toIntro()}
+    else if(d.a==='cancel'&&G.phase==='pick'){G.phase='idle';G.challenger=null;renderBoard()}
+  }else if(scr==='intro'){
+    if(d.a==='go') startDuel(); else if(d.a==='back') toBoard();
+  }else if(scr==='result'){
+    if(d.a==='again'){show('board');setChallenger(G.lastWinner)} else if(d.a==='floor') toBoard();
+  }
+}
+function openPresenter(){
+  if(PRES.win&&!PRES.win.closed){PRES.win.focus();return}
+  const url=location.href.split('#')[0]+'#presenter';
+  let w=null;
+  try{w=window.open(url,'tempoFloorPresenter','width=600,height=860')}catch(e){w=null}
+  if(!w){ask('Your browser blocked the presenter window. Allow pop-ups for this page, then click Presenter window again.','OK');return}
+  PRES.win=w; setTimeout(broadcast,600);
+}
+window.addEventListener('message',e=>{
+  const m=e.data; if(!m||m.src!=='tempoFloor') return;
+  if(ROOM.mode==='stage'&&m.type==='cmd'&&PRES.win&&e.source===PRES.win) handleCmd(m.d);
+  else if(ROOM.mode==='presenter'&&m.type==='stage'&&e.source===window.opener) gotStage(m.d);
+});
+async function initRoom(){
+  try{
+    if(!window.claude||typeof window.claude.use!=='function') return;
+    const r=await window.claude.use('room'); if(!r) return;
+    ROOM.ns=r;
+    r.on('remote',m=>{const d=m.data||{};if(d.code===ROOM.code) handleCmd(d)},()=>{});
+    r.on('stage',m=>{if(ROOM.mode==='remote'){const d=m.data;if(d&&d.code===R.code) gotStage(d)}},()=>{});
+    r.onPeers(ch=>{if(ch.joined.length) broadcast()},()=>{});
+    show(visible());
+  }catch(e){}
+}
+setInterval(()=>{if(ROOM.mode==='stage'&&performance.now()-ROOM.lastB>1500) broadcast()},1500);
+let codeTimer=null;
+function revealCode(){
+  const b=$('#btnCode');b.innerHTML=`Remote code <b>${ROOM.code}</b>`;
+  clearTimeout(codeTimer);codeTimer=setTimeout(()=>{b.textContent='Show remote code'},15000);
+}
+
+/* controller side (presenter window or phone) */
+const R={code:'',last:null,lastAt:0,pendingSeq:null,pendingAt:0};
+async function enterRemote(){
+  if(G){
+    if(D&&D.started&&!D.over&&!D.paused) setPaused(true);
+    const ok=await ask('Turn this device into the phone remote? The game running on this screen will end.','Use as remote');
+    if(!ok) return;
+    stopDuel(); G=null;
+  }
+  ROOM.mode='remote'; R.last=null;
+  $('#rmCode').value=R.code; $('#rmErr').textContent='';
+  show('remote'); renderRemote();
+}
+function exitRemote(){
+  if(ROOM.mode==='presenter'){window.close();return}
+  ROOM.mode='stage';R.code='';R.last=null;initSetup();show('setup');
+}
+function connectRemote(){
+  const c=$('#rmCode').value.trim();
+  if(!/^\d{4}$/.test(c)){$('#rmErr').textContent='Enter the 4-digit code shown on the game screen.';return}
+  if(!ROOM.ns){$('#rmErr').textContent='The phone remote only works from the claude.ai link. Use Presenter window on the game computer instead.';return}
+  $('#rmErr').textContent='';R.code=c;R.last=null;R.lastAt=Date.now();sendCmd('hello');renderRemote();
+}
+function sendCmd(a,extra){
+  const seq=R.last?R.last.seq:null;
+  if(a==='correct'||a==='pass'){R.pendingSeq=seq;R.pendingAt=Date.now()}
+  const msg=Object.assign({a,seq},extra||{});
+  if(ROOM.mode==='presenter'){
+    try{if(window.opener&&!window.opener.closed) window.opener.postMessage({src:'tempoFloor',type:'cmd',d:msg},'*')}catch(e){}
+  }else if(ROOM.ns&&R.code){
+    msg.code=R.code;try{ROOM.ns.emit('remote',msg).catch(()=>{})}catch(e){}
+  }
+  renderRemote();
+}
+function gotStage(d){
+  R.last=d;R.lastAt=Date.now();
+  if(R.pendingSeq!=null&&(d.seq!==R.pendingSeq||d.busy)) R.pendingSeq=null;
+  renderRemote();
+}
+let floorKey='';
+function renderFloorControls(d){
+  const box=$('#rmFloor'); let html='';
+  if(d.screen==='board'&&d.phase==='idle'){
+    html=`<button class="btn primary" data-a="random">Randomizer</button>
+      <div class="grid2"><select id="rmChal" aria-label="Pick a challenger"><option value="">Or pick a challenger…</option>${(d.players||[]).map(p=>`<option value="${p.id}">${esc(p.n)}</option>`).join('')}</select><button class="btn" data-a="challengerPick">Set challenger</button></div>`;
+  }else if(d.screen==='board'&&d.phase==='pick'){
+    html=`<p class="note" style="margin:0">Pick who they challenge:</p>${(d.targets||[]).map(t=>`<button class="btn" data-a="target" data-id="${t.id}">${esc(t.n)} <span class="note">· ${esc(t.c)}</span></button>`).join('')}<button class="btn" data-a="cancel">Cancel</button>`;
+  }else if(d.screen==='intro'){
+    html=`<button class="btn primary" data-a="go">Start duel</button><button class="btn" data-a="back">Back to floor</button>`;
+  }else if(d.screen==='result'){
+    html=`<button class="btn primary" data-a="again">${esc(d.winner||'Winner')} challenges again</button><button class="btn" data-a="floor">Back to Randomizer</button>`;
+  }
+  const key=html;
+  if(key!==floorKey){box.innerHTML=html;floorKey=key}
+}
+$('#rmFloor').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-a]'); if(!b) return;
+  const a=b.dataset.a;
+  if(a==='challengerPick'){const v=$('#rmChal').value;if(v!=='') sendCmd('challenger',{id:+v});return}
+  sendCmd(a,b.dataset.id!=null?{id:+b.dataset.id}:null);
+});
+function renderRemote(){
+  if(ROOM.mode!=='remote'&&ROOM.mode!=='presenter') return;
+  const pres=ROOM.mode==='presenter';
+  const live=pres||!!R.code;
+  $('#rmSetup').hidden=live; $('#rmLive').hidden=!live;
+  $('#rmKeys').hidden=!pres;
+  $('#rmExit').textContent=pres?'Close presenter window':'Leave remote mode';
+  if(!live) return;
+  const d=R.last, stale=!d||Date.now()-R.lastAt>6000;
+  if(pres&&!window.opener){$('#rmStatus').textContent='Open this from the Presenter window button in the game.';$('#rmDuel').hidden=true;renderFloorControls({});return}
+  if(stale){
+    $('#rmStatus').textContent=pres?'Waiting for the game window. Keep it open.':`Looking for the game screen with code ${R.code}. Make sure it's open and the code matches.`;
+    $('#rmDuel').hidden=true; renderFloorControls({}); return;
+  }
+  if(!d.duel){$('#rmStatus').textContent=d.msg||'Waiting for the next duel.';$('#rmDuel').hidden=true;renderFloorControls(d);return}
+  renderFloorControls({});
+  $('#rmDuel').hidden=false;
+  $('#rmStatus').textContent=d.over?'Time\'s up!':(!d.started?'Countdown…':(d.paused?'Paused':`${d.names[d.active]} is answering`));
+  $('#rmCat').textContent=d.cat;
+  $('#rmAn').textContent=d.names[0];$('#rmBn').textContent=d.names[1];
+  $('#rmAt').textContent=d.time[0].toFixed(1);$('#rmBt').textContent=d.time[1].toFixed(1);
+  $('#rmA').classList.toggle('on',d.started&&!d.over&&d.active===0);$('#rmB').classList.toggle('on',d.started&&!d.over&&d.active===1);
+  $('#rmClue').textContent=d.clue||'';
+  $('#rmAns').textContent=d.ans||'';
+  const pending=R.pendingSeq!=null&&Date.now()-R.pendingAt<1500;
+  const block=!d.started||d.over||d.paused||d.busy||pending;
+  $('#rmCorrect').disabled=block;$('#rmPass').disabled=block;
+  $('#rmPause').disabled=!d.started||d.over;
+  $('#rmPause').textContent=d.paused?'Resume':'Pause';
+  $('#rmAbort').disabled=d.over;
+}
+setInterval(()=>{
+  if(ROOM.mode!=='remote'&&ROOM.mode!=='presenter') return;
+  renderRemote();
+  if((ROOM.mode==='presenter'||R.code)&&(!R.last||Date.now()-R.lastAt>3000)) sendCmd('hello');
+},1000);
+async function remoteAbort(){if(await ask('End this duel with no winner? Both players keep their squares.','End duel')) sendCmd('abort')}
+
+/* ---------- Settings back end ---------- */
+let stPrev='setup', stSel=0, savedT=null;
+function persist(){
+  const ok=store('bank2',CATS)&&store('roster',ROSTER);
+  setDirty(true);
+  const s=$('#saved'); s.textContent=ok?'Saved':'Couldn\'t save on this device';s.classList.add('on');
+  clearTimeout(savedT);savedT=setTimeout(()=>s.classList.remove('on'),1500);
+  if(G) G.pools={};
+}
+function openSettings(tab){
+  if(D&&D.started&&!D.over&&!D.paused) setPaused(true);
+  const v=visible(); if(v!=='settings') stPrev=v||'setup';
+  stSel=Math.min(stSel,CATS.length-1);
+  $('#duelTime').value=settings.duel;$('#passPen').value=settings.pass;$('#sound').checked=settings.sound;
+  $('#xferMsg').textContent='';$('#teamMsg').textContent='';updateBanner();
+  selectTab(tab||'bank'); renderBank(); show('settings');
+}
+function closeSettings(){
+  if(stPrev==='setup') setupSummary();
+  if(G&&(stPrev==='board'||stPrev==='intro'||stPrev==='result')) renderBoard();
+  if(G&&stPrev==='intro') toIntro();
+  if(D){$('#pAn').textContent=G.players[D.p[0]].name;$('#pBn').textContent=G.players[D.p[1]].name}
+  show(stPrev);
+}
+function selectTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('sel',b.dataset.tab===t));
+  ['bank','players','game','team','xfer'].forEach(x=>$('#tab-'+x).hidden=x!==t);
+  if(t==='players') renderPlayers();
+  if(t==='team') renderTeam();
+}
+function renderBank(){
+  $('#catList').innerHTML=CATS.map((c,i)=>`<button data-i="${i}" class="${i===stSel?'sel':''}"><span>${esc(c.name)}</span><span>${c.q.length}</span></button>`).join('');
+  const c=CATS[stSel];
+  $('#catName').value=c.name;
+  const inUse=G&&G.players.some(p=>p.alive&&p.cat===stSel);
+  $('#btnDelCat').disabled=CATS.length<=1||!!G;
+  $('#catNote').textContent=G?'A game is running, so categories can\'t be deleted right now. You can still add and edit questions.':(c.q.length<12?'Aim for 12 or more questions so duels don\'t repeat.':'');
+  $('#qCount').textContent=`${c.q.length} question${c.q.length===1?'':'s'} in ${c.name}`;
+  $('#qTable').innerHTML=(c.q.length?`<div class="qrow qhead"><span class="num">#</span><span>Clue</span><span class="a">Answer</span><span></span></div>`:'<p class="note">No questions yet. Add one above.</p>')+
+    c.q.map((q,i)=>`<div class="qrow" data-i="${i}"><span class="num">${i+1}</span><input type="text" data-f="0" value="${esc(q[0])}" aria-label="Clue ${i+1}"><input type="text" class="a" data-f="1" value="${esc(q[1])}" aria-label="Answer ${i+1}"><button class="xbtn" data-del="${i}" aria-label="Delete question ${i+1}" title="Delete">×</button></div>`).join('');
+}
+$('#catList').addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(!b) return;stSel=+b.dataset.i;$('#addErr').textContent='';renderBank()});
+$('#catName').addEventListener('change',()=>{const v=$('#catName').value.trim();if(!v){$('#catName').value=CATS[stSel].name;return}CATS[stSel].name=v;persist();renderBank()});
+$('#qTable').addEventListener('change',e=>{
+  const inp=e.target.closest('input[data-f]'); if(!inp) return;
+  const i=+inp.closest('.qrow').dataset.i, f=+inp.dataset.f, v=inp.value.trim();
+  if(f===0&&!v){inp.value=CATS[stSel].q[i][0];return}
+  CATS[stSel].q[i][f]=v; persist();
+});
+$('#qTable').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-del]'); if(!b) return;
+  const i=+b.dataset.del;
+  if(!(await ask(`Delete this question? "${CATS[stSel].q[i][0]}"`,'Delete'))) return;
+  CATS[stSel].q.splice(i,1); persist(); renderBank();
+});
+function addQuestion(){
+  const c=$('#newClue').value.trim(), a=$('#newAns').value.trim();
+  if(!c||!a){$('#addErr').textContent='Enter both a clue and an answer.';return}
+  $('#addErr').textContent='';
+  CATS[stSel].q.push([c,a]); persist();
+  $('#newClue').value='';$('#newAns').value='';renderBank();$('#newClue').focus();
+}
+$('#btnAddQ').onclick=addQuestion;
+$('#newClue').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#newAns').focus()}});
+$('#newAns').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addQuestion()}});
+$('#btnBulk').onclick=()=>{
+  const qs=parseLines($('#bulk').value).filter(q=>q[1]);
+  if(!qs.length){$('#addErr').textContent='Nothing to add. Put a bar between each clue and answer.';return}
+  CATS[stSel].q.push(...qs);persist();$('#bulk').value='';$('#addErr').textContent='';renderBank();
+};
+function addCategory(){
+  const n=$('#newCat').value.trim(); if(!n){$('#newCat').focus();return}
+  CATS.push({name:n,q:[]});persist();$('#newCat').value='';stSel=CATS.length-1;renderBank();$('#newClue').focus();
+}
+$('#btnAddCat').onclick=addCategory;
+$('#newCat').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addCategory()}});
+$('#btnDelCat').onclick=async()=>{
+  if(G||CATS.length<=1) return;
+  const c=CATS[stSel];
+  if(!(await ask(`Delete "${c.name}" and its ${c.q.length} questions?`,'Delete category'))) return;
+  CATS.splice(stSel,1);stSel=Math.max(0,stSel-1);persist();renderBank();
+};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>selectTab(b.dataset.tab));
+
+/* ---------- Players / roster ---------- */
+function promptText(msg,val){
+  return new Promise(res=>{
+    const d=$('#rename'),i=$('#rnIn');$('#rnMsg').textContent=msg;i.value=val||'';
+    const done=v=>{d.oncancel=null;$('#rnOk').onclick=null;$('#rnNo').onclick=null;i.onkeydown=null;if(d.open)d.close();res(v)};
+    $('#rnOk').onclick=()=>done(i.value.trim()||null);$('#rnNo').onclick=()=>done(null);
+    i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();done(i.value.trim()||null)}};
+    d.oncancel=e=>{e.preventDefault();done(null)};
+    d.showModal();i.select();
+  });
+}
+function renderPlayers(){
+  $('#rosterList').innerHTML=ROSTER.length?ROSTER.map((n,i)=>`<div class="prow" data-i="${i}"><input type="text" value="${esc(n)}" aria-label="Player ${i+1}"><button class="xbtn" data-del="${i}" aria-label="Remove ${esc(n)}" title="Remove">×</button></div>`).join(''):'<p class="note">No players yet. Add your team above.</p>';
+  $('#gamePlayers').hidden=!G;
+  if(G) $('#gameList').innerHTML=G.players.map(p=>`<div class="prow" data-id="${p.id}" style="grid-template-columns:minmax(0,1fr)"><input type="text" value="${esc(p.name)}" aria-label="Game player ${p.id+1}"></div>`).join('');
+}
+function addPlayer(){
+  const v=$('#newPlayer').value.trim(); if(!v){$('#newPlayer').focus();return}
+  ROSTER.push(v);persist();$('#newPlayer').value='';renderPlayers();$('#newPlayer').focus();
+}
+$('#btnAddPlayer').onclick=addPlayer;
+$('#newPlayer').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addPlayer()}});
+$('#rosterList').addEventListener('change',e=>{
+  const row=e.target.closest('.prow');if(!row) return;const i=+row.dataset.i,v=e.target.value.trim();
+  if(!v){e.target.value=ROSTER[i];return} ROSTER[i]=v;persist();
+});
+$('#rosterList').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-del]');if(!b) return;ROSTER.splice(+b.dataset.del,1);persist();renderPlayers();
+});
+$('#gameList').addEventListener('change',e=>{
+  const row=e.target.closest('.prow');if(!row||!G) return;const v=e.target.value.trim();const p=G.players[+row.dataset.id];
+  if(!v){e.target.value=p.name;return} p.name=v;
+});
+$('#lb').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-rn]');if(!b||!G) return;const p=G.players[+b.dataset.rn];
+  const v=await promptText('Rename player',p.name); if(!v) return;
+  p.name=v; renderBoard();
+});
+$('#btnUseRoster').onclick=()=>{
+  if(!ROSTER.length){$('#setupErr').textContent='The team roster is empty. Add your players in Settings, under Players.';return}
+  $('#setupErr').textContent='';$('#names').value=ROSTER.join('\n');
+};
+
+/* ---------- Team sharing through GitHub ---------- */
+function setDirty(v){TEAM.dirty=v;store('dirty',v);updateBanner()}
+function updateBanner(){$('#syncBanner').hidden=!TEAM.dirty}
+$('#btnBannerShare').onclick=()=>selectTab('team');
+function dataObj(){return {app:'tempo-floor',version:1,updatedAt:new Date().toISOString(),categories:CATS,roster:ROSTER}}
+function validData(o){return o&&validCats(o.categories)}
+function adopt(o){
+  CATS=cleanCats(o.categories);
+  ROSTER=Array.isArray(o.roster)?o.roster.map(x=>String(x).trim()).filter(Boolean):[];
+  store('bank2',CATS);store('roster',ROSTER);
+  TEAM.seen=o.updatedAt||null;store('teamSeen',TEAM.seen);
+  stSel=0;
+}
+function refreshAfterAdopt(){
+  if(!$('#setup').hidden){setupSummary();if(!load('names')&&ROSTER.length) $('#names').value=ROSTER.join('\n')}
+  if(!$('#settings').hidden){renderBank();if(!$('#tab-players').hidden) renderPlayers()}
+}
+async function loadTeamFile(){
+  if(ROOM.mode!=='stage') return;
+  try{
+    const r=await fetch(TEAM.file+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
+    const o=await r.json(); if(!validData(o)) return;
+    if(TEAM.dirty||G) return;   // keep this device's unshared edits, and never swap questions mid-game
+    adopt(o); refreshAfterAdopt();
+  }catch(e){}
+}
+function renderTeam(){
+  $('#repoIn').value=TEAM.repo;$('#tokenIn').value=TEAM.token;
+  $('#teamIntro').textContent=TEAM.hosted
+    ?'Share your edits so everyone who opens this game gets the same questions and roster. Anyone can edit on their own device; sharing needs the editor token.'
+    :'Team sharing works when the game is opened from your GitHub Pages link. On this copy, edits stay on this device. You can still move them with Backup.';
+}
+function readTeamInputs(){
+  TEAM.repo=$('#repoIn').value.trim().replace(/^https?:\/\/github\.com\//i,'').replace(/\/+$/,'');
+  TEAM.token=$('#tokenIn').value.trim();
+  store('repo',TEAM.repo);store('token',TEAM.token);
+  if(!/^[\w.-]+\/[\w.-]+$/.test(TEAM.repo)){$('#teamMsg').textContent='Enter the repository as owner/name, like yourname/tempo-floor.';return false}
+  return true;
+}
+const b64enc=s=>{const b=new TextEncoder().encode(s);let bin='';for(let i=0;i<b.length;i+=0x8000) bin+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(bin)};
+const b64dec=s=>new TextDecoder().decode(Uint8Array.from(atob(String(s).replace(/\s/g,'')),c=>c.charCodeAt(0)));
+async function gh(method,body){
+  const url=`https://api.github.com/repos/${TEAM.repo}/contents/${TEAM.file}`;
+  const h={'Accept':'application/vnd.github+json'};
+  if(TEAM.token) h.Authorization='Bearer '+TEAM.token;
+  if(body) h['Content-Type']='application/json';
+  const r=await fetch(url,{method,headers:h,body:body?JSON.stringify(body):undefined,cache:'no-store'});
+  let j=null;try{j=await r.json()}catch(e){}
+  return {ok:r.ok,status:r.status,j};
+}
+function ghError(st){
+  if(st===401) return 'GitHub didn\'t accept the token. Check that it was pasted correctly and hasn\'t expired.';
+  if(st===403) return 'The token doesn\'t have permission to change this repository. It needs Contents: Read and write.';
+  if(st===404) return 'GitHub couldn\'t find that repository. Check the owner/name, and that the token can access it.';
+  if(st===409||st===422) return 'GitHub had a conflict saving. Tap Share again.';
+  return 'GitHub returned an error ('+st+'). Try again in a minute.';
+}
+async function publishTeam(){
+  if(!readTeamInputs()) return;
+  if(!TEAM.token){$('#teamMsg').textContent='Paste the editor token first.';return}
+  const msg=$('#teamMsg'), btn=$('#btnPublish'); btn.disabled=true; msg.textContent='Checking the team version…';
+  try{
+    const cur=await gh('GET');
+    if(!cur.ok&&cur.status!==404){msg.textContent=ghError(cur.status);return}
+    if(cur.ok){
+      let remote=null;try{remote=JSON.parse(b64dec(cur.j.content))}catch(e){}
+      if(remote&&remote.updatedAt&&remote.updatedAt!==TEAM.seen){
+        const go=await ask('Someone shared changes that this device hasn\'t loaded yet. Sharing yours will replace theirs. Continue?','Share anyway');
+        if(!go){msg.textContent='Not shared. Tap "Get the latest from the team" to load their version first.';return}
+      }
+    }
+    msg.textContent='Sharing…';
+    const data=dataObj();
+    const put=await gh('PUT',{message:'Update Floor questions and roster',content:b64enc(JSON.stringify(data,null,1)),...(cur.ok?{sha:cur.j.sha}:{})});
+    if(!put.ok){msg.textContent=ghError(put.status);return}
+    TEAM.seen=data.updatedAt;store('teamSeen',TEAM.seen);setDirty(false);
+    msg.textContent='Shared. Everyone gets the update the next time they open or refresh the game. GitHub can take a couple of minutes.';
+  }catch(e){
+    msg.textContent='Couldn\'t reach GitHub. Team sharing only works from your GitHub Pages link, with an internet connection.';
+  }finally{btn.disabled=false}
+}
+async function pullTeam(){
+  if(!readTeamInputs()) return;
+  if(G){$('#teamMsg').textContent='End the current game first, then get the latest questions.';return}
+  if(TEAM.dirty&&!(await ask('Replace this device\'s unshared edits with the team version?','Replace'))) return;
+  const msg=$('#teamMsg'); msg.textContent='Loading the team version…';
+  try{
+    const res=await gh('GET');
+    if(res.status===404){msg.textContent='There\'s no shared version yet. Share yours to create it.';return}
+    if(!res.ok){msg.textContent=ghError(res.status);return}
+    const o=JSON.parse(b64dec(res.j.content));
+    if(!validData(o)){msg.textContent='The shared file isn\'t a valid question set.';return}
+    adopt(o);setDirty(false);renderBank();
+    msg.textContent='Loaded the latest team questions and roster.';
+  }catch(e){msg.textContent='Couldn\'t reach GitHub. Team sharing only works from your GitHub Pages link, with an internet connection.'}
+}
+$('#btnPublish').onclick=publishTeam;
+$('#btnPull').onclick=pullTeam;
+function saveRules(){
+  settings.duel=Math.min(180,Math.max(10,Math.round(+$('#duelTime').value)||45));
+  settings.pass=Math.min(15,Math.max(0,Math.round(+$('#passPen').value)||0));
+  settings.sound=$('#sound').checked;
+  $('#duelTime').value=settings.duel;$('#passPen').value=settings.pass;
+  store('settings',settings);
+  const s=$('#saved');s.textContent='Saved';s.classList.add('on');clearTimeout(savedT);savedT=setTimeout(()=>s.classList.remove('on'),1500);
+}
+['duelTime','passPen','sound'].forEach(id=>$('#'+id).addEventListener('change',saveRules));
+$('#btnExport').onclick=()=>{$('#xferBox').value=JSON.stringify(CATS);$('#xferBox').select();$('#xferMsg').textContent='Your questions are in the box. Select all, copy, and paste it on the other device.'};
+$('#btnImport').onclick=async()=>{
+  let c;try{c=JSON.parse($('#xferBox').value)}catch(e){c=null}
+  if(!validCats(c)){$('#xferMsg').textContent='That isn\'t a question set. Paste the whole code from the other device.';return}
+  if(G){$('#xferMsg').textContent='End the current game first, then replace your questions.';return}
+  if(!(await ask('Replace all your categories and questions with the ones in the box?','Replace'))) return;
+  CATS=cleanCats(c);stSel=0;persist();renderBank();$('#xferMsg').textContent='Questions replaced. Share them in Team sharing so everyone gets them.';
+};
+$('#btnResetQ').onclick=async()=>{
+  if(G){$('#xferMsg').textContent='End the current game first, then restore the original questions.';return}
+  if(!(await ask('Replace all your categories and questions with the original set? Your edits will be lost.','Restore originals'))) return;
+  CATS=parseCats(DEFAULTS);stSel=0;persist();renderBank();$('#xferMsg').textContent='Original questions restored.';
+};
+
+/* ---------- Wire up ---------- */
+$('#btnStart').onclick=startGame;
+$('#btnEnd').onclick=endGame;
+$('#btnRandom').onclick=randomize;
+$('#btnCancelPick').onclick=()=>{G.phase='idle';G.challenger=null;renderBoard()};
+$('#btnBackBoard').onclick=toBoard;
+$('#btnGo').onclick=startDuel;
+$('#btnCorrect').onclick=correct;$('#btnPass').onclick=pass;
+$('#btnPause').onclick=togglePause;$('#btnResume').onclick=()=>setPaused(false);
+$('#btnPeek').onclick=togglePeek;$('#btnAbort').onclick=abortDuel;
+$('#btnFloor').onclick=toBoard;
+$('#btnAgain').onclick=()=>{show('board');setChallenger(G.lastWinner)};
+$('#btnReplay').onclick=()=>{G=null;initSetup();show('setup')};
+$('#btnSettings').onclick=()=>openSettings('bank');
+$('#btnDone').onclick=closeSettings;
+$('#btnPresenter').onclick=openPresenter;
+$('#btnRemote').onclick=enterRemote;
+$('#btnCode').onclick=revealCode;
+$('#rmConnect').onclick=connectRemote;
+$('#rmCode').addEventListener('keydown',e=>{if(e.key==='Enter') connectRemote()});
+$('#rmCorrect').onclick=()=>sendCmd('correct');
+$('#rmPass').onclick=()=>sendCmd('pass');
+$('#rmPause').onclick=()=>sendCmd(R.last&&R.last.paused?'resume':'pause');
+$('#rmAbort').onclick=remoteAbort;
+$('#rmExit').onclick=exitRemote;
+
+/* Keyboard shortcuts. Buttons drop focus after a tap so Enter/Space can't re-trigger them. */
+document.querySelectorAll('.controls button,.rm-btns button').forEach(b=>b.addEventListener('pointerup',()=>b.blur()));
+document.addEventListener('keydown',e=>{
+  if($('#confirm').open||$('#rename').open||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  const k=e.key;
+  if(ROOM.mode==='presenter'){
+    if(!R.last||!R.last.duel) return;
+    if(k==='Enter'||k==='ArrowRight'){e.preventDefault();if(!$('#rmCorrect').disabled) sendCmd('correct')}
+    else if(k==='p'||k==='P'){e.preventDefault();if(!$('#rmPass').disabled) sendCmd('pass')}
+    else if(k===' '){e.preventDefault();sendCmd(R.last.paused?'resume':'pause')}
+    return;
+  }
+  if($('#duel').hidden) return;
+  if(k==='Enter'||k==='ArrowRight'){e.preventDefault();correct()}
+  else if(k==='p'||k==='P'){e.preventDefault();pass()}
+  else if(k===' '){e.preventDefault();togglePause()}
+  else if(k==='h'||k==='H'){e.preventDefault();togglePeek()}
+});
+document.addEventListener('keyup',e=>{if((e.key===' '||e.key==='Enter')&&e.target.tagName==='BUTTON'&&(!$('#duel').hidden||ROOM.mode==='presenter')) e.preventDefault()});
+
+if(ROOM.mode==='presenter'){
+  document.body.classList.add('presenter');
+  document.title='Presenter · The Floor';
+  $('#brandSub').textContent='Presenter view: answers stay on this screen';
+  show('remote'); renderRemote(); sendCmd('hello');
+}else{
+  initSetup(); show('setup'); initRoom(); loadTeamFile();
+}
+
+</script>
+</body>
+</html>
